@@ -1,6 +1,6 @@
 # RealEstateBMON
 
-A guided 1080p real estate tour. Each room transition is drawn frame by frame to a canvas from a 60 fps interpolated clip at 2× speed, so the movement takes about 3 seconds and can show up to 120 distinct frames per second on a 120 Hz display. Choosing a distant room plays every intervening transition in order. Nearby clips preload while the page remains available.
+A guided 1080p real estate tour. Each room transition is drawn frame by frame to a canvas from a 60 fps interpolated clip. An adjacent room plays at 2× speed, taking about three seconds and showing up to 120 distinct frames per second on a 120 Hz display. Longer selections accelerate the entire route to 4×–8× while still passing through every room. An overview-to-last-room trip takes about six seconds. Nearby clips preload while the page remains available.
 
 The booking section embeds the Bmon.AI HighLevel calendar for live appointment selection.
 

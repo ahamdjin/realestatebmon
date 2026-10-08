@@ -61,10 +61,13 @@ function displayRoom(index) {
   preloadNear(index);
 }
 // Each interpolated 60 fps clip is decoded into individual canvas frames.
-// At 2x playback, a 6-second movement takes about 3 seconds and can supply
-// 120 distinct frames per second on a 120 Hz display.
+// A one-room move plays at 2x; longer journeys use one higher rate throughout.
+// Displayed frames are limited by the device refresh rate.
 const TOUR_PLAYBACK_RATE = 2;
-function playFrameSequence(path) {
+function tripPlaybackRate(distance) {
+  return distance <= 1 ? TOUR_PLAYBACK_RATE : Math.min(8, distance + 2);
+}
+function playFrameSequence(path, playbackRate = TOUR_PLAYBACK_RATE) {
   return new Promise(resolve => {
     const video = transitionVideo(path);
     const canvas = document.createElement('canvas');
@@ -93,7 +96,7 @@ function playFrameSequence(path) {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       $('flyWrap').appendChild(canvas);
-      video.playbackRate = TOUR_PLAYBACK_RATE;
+      video.playbackRate = playbackRate;
       const draw = () => {
         if (finished) return;
         if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -124,14 +127,16 @@ async function navigateTo(index) {
   nextTarget=Math.max(0,Math.min(ROOMS.length,index));
   if(busy)return;
   busy=true;
-  stage.classList.toggle('is-sequencing',Math.abs(nextTarget-currentStop)>1);
+  const distance = Math.abs(nextTarget-currentStop);
+  const playbackRate = tripPlaybackRate(distance);
+  stage.classList.toggle('is-sequencing',distance>1);
   while(currentStop!==nextTarget){
     const direction=Math.sign(nextTarget-currentStop);
     const following=currentStop+direction;
     if(reduceMotion){displayRoom(following);continue;}
     // Step through every intervening room to preserve spatial continuity.
     const path=direction>0 ? paths[currentStop] : reversePaths[following];
-    await playFrameSequence(path);
+    await playFrameSequence(path,playbackRate);
     displayRoom(following);
   }
   stage.classList.remove('is-sequencing');

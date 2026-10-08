@@ -1,6 +1,6 @@
 # Project memory
 
-`index.html`, `rooms.js`, `tour.js`, and `assets/` contain the site. `source/` contains the two user supplied files. The tour decodes 60 fps 1080p transition clips from `assets/scroll/` and `assets/reverse/`, draws frames to a canvas at 2× playback speed, and preloads nearby clips. Distant room selections play the intervening transitions in order. The page does not wait for all media before opening.
+`index.html`, `rooms.js`, `tour.js`, and `assets/` contain the site. `source/` contains the two user supplied files. The tour decodes 60 fps 1080p transition clips from `assets/scroll/` and `assets/reverse/` and draws frames to a canvas. Adjacent moves play at 2×; longer selections use one distance-based rate of 4×–8× across all intervening transitions. Nearby clips preload. The page does not wait for all media before opening.
 
 The bottom booking section embeds the Bmon.AI HighLevel calendar at `https://link.bmon.ai/widget/booking/pJOHnRC4COrbPoHl0yA6` with its `form_embed.js` resize script.
 
