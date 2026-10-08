@@ -10,14 +10,14 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --black:#0B0B0B; --white:#F7F7F5; --grey:#9A9A96; --line-d:rgba(247,247,245,.14); --line-l:rgba(11,11,11,.12);
   --pool:#3FB8B4; --soft:#D9DEE2;
   --bg:var(--black); --fg:var(--white);
   --ui:'Inter','Helvetica Neue',Arial,system-ui,sans-serif;
-  --listing:'Italiana','Didot','Bodoni 72',Georgia,serif;
+  --listing:'Inter','Helvetica Neue',Arial,system-ui,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -234,6 +234,11 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   .facts li{font-size:.8rem}
 }
 @media (prefers-reduced-motion: reduce){ .cue i{animation:none} }
+/* Site-wide minimal typography */
+h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats strong,.cost-row strong{font-family:var(--ui);letter-spacing:-.045em}
+.thero h2,.card h3,.loader-inner h2,.ai-contact h2{font-family:var(--ui);font-weight:500;letter-spacing:-.045em}
+.property-intro h2,.rooms-editorial h2,.floorplan-editorial h2,.cost-editorial h2,.process-brief h2{font-weight:500;line-height:1.08}
+.rooms-editorial h3,.floorplan-editorial h3,.cost-row strong,.property-stats strong,.floor-card strong{font-weight:500}
 </style>
 </head>
 <body class="loading">
