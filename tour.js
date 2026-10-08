@@ -54,12 +54,13 @@ async function fetchAsset(path) {
       received.set(path, count);
       updateLoading();
     }
-    blob = new Blob(chunks, {type: response.headers.get('content-type') || 'application/octet-stream'});
+    blob = new Blob(chunks, {type: path.endsWith('.mp4') ? 'video/mp4' : (response.headers.get('content-type') || 'application/octet-stream')});
   } else {
     blob = await response.blob();
     received.set(path, blob.size);
     totals.set(path, blob.size);
   }
+  if (path.endsWith('.mp4') && blob.type !== 'video/mp4') blob = blob.slice(0, blob.size, 'video/mp4');
   const url = URL.createObjectURL(blob);
   if (!path.endsWith('.mp4')) {
     const image = new Image();
