@@ -91,20 +91,15 @@ function goTo(index) {
   tour.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
   navigateTo(index);
 }
-const introButton=document.createElement('button');
-introButton.type='button';introButton.innerHTML='<span class="nm">Overview</span><span class="dot"></span>';
-introButton.setAttribute('aria-label','View property overview');
-introButton.addEventListener('click',()=>goTo(0));
-rail.appendChild(introButton); roomButtons.push(introButton);
-ROOMS.forEach((room,i)=>{
-  const button=document.createElement('button');button.type='button';
-  const label=document.createElement('span');label.className='nm';label.textContent=room.name;
-  const dot=document.createElement('span');dot.className='dot';
-  button.append(label,dot);
-  button.setAttribute('aria-label','View '+room.name);
-  button.addEventListener('click',()=>goTo(i+1));
-  rail.appendChild(button);roomButtons.push(button);
-});
+function addRoomButton(label,image,index){
+ const button=document.createElement('button');button.type='button';
+ const img=document.createElement('img');img.src=image;img.alt='';img.loading='eager';
+ const text=document.createElement('span');text.className='nm';text.textContent=label;
+ button.append(img,text);button.setAttribute('aria-label','View '+label);
+ button.addEventListener('click',()=>goTo(index));rail.appendChild(button);roomButtons.push(button);
+}
+addRoomButton('Overview','assets/hero-poster.jpg',0);
+ROOMS.forEach((room,i)=>addRoomButton(room.name,room.img,i+1));
 $('startTour').addEventListener('click',()=>goTo(1));
 window.addEventListener('scroll',()=> $('nav').classList.toggle('solid',scrollY>innerHeight*.6),{passive:true});
 displayRoom(0);
