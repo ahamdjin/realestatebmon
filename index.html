@@ -10,13 +10,13 @@
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
 <style>
 :root{
   --black:#0B0B0B; --white:#F7F7F5; --grey:#9A9A96; --line-d:rgba(247,247,245,.14); --line-l:rgba(11,11,11,.12);
   --pool:#3FB8B4; --soft:#D9DEE2;
   --bg:var(--black); --fg:var(--white);
-  --ui:'Familjen Grotesk','Helvetica Neue',Arial,system-ui,sans-serif;
+  --ui:'Inter','Helvetica Neue',Arial,system-ui,sans-serif;
   --listing:'Italiana','Didot','Bodoni 72',Georgia,serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
@@ -129,6 +129,56 @@ body.loading{overflow:hidden}
 .editorial-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
 @media(max-width:860px){.editorial-grid{grid-template-columns:1fr;gap:3rem}.editorial-plan{padding:1rem}.plan-grid{grid-template-rows:65px 105px 85px}.plan-room{padding:.4rem}.editorial h2{font-size:clamp(3.2rem,13vw,5.5rem)}}
 
+/* Editorial listing layout */
+.property-intro,.floorplan-editorial{background:#f3f0ec;color:#211f1d}
+.property-intro{padding:clamp(6rem,10vw,10rem) 0 7rem}
+.property-wrap{max-width:1100px;margin:auto;padding:0 clamp(1.2rem,4vw,3rem)}
+.property-location{font-size:.9rem;color:#77726c;margin:0 0 1.4rem}
+.property-intro h2,.rooms-editorial h2,.rooms-editorial h3,.floorplan-editorial h2,.floorplan-editorial h3,.floor-card strong,.cost-editorial h2,.cost-row strong,.process-brief h2,.property-stats strong{font-family:var(--listing);font-weight:400}
+.property-intro h2{font-size:clamp(2.6rem,5.15vw,5rem);line-height:1.09;letter-spacing:-.025em;max-width:1050px;margin:0 0 3.5rem}
+.property-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #dcd7d1;border-bottom:1px solid #dcd7d1;gap:1rem;padding:2rem 0}
+.property-stats div{display:flex;flex-direction:column;gap:.2rem}
+.property-stats strong{font-size:clamp(1.9rem,3vw,2.9rem)}
+.property-stats span,.property-notice{color:#77716a;font-size:.9rem}
+.property-notice{margin-top:1.7rem}
+.rooms-editorial{background:#fff;color:#211f1d;padding:clamp(5rem,9vw,9rem) 0}
+.rooms-editorial h2{font-size:clamp(3rem,5vw,5rem);margin:0 0 2.5rem}
+.rooms-editorial figure{margin:0}
+.rooms-editorial img{width:100%;display:block;object-fit:cover;border-radius:22px}
+.feature-room img{aspect-ratio:1.85/1}
+.rooms-editorial figcaption{padding-top:1.1rem}
+.rooms-editorial h3{font-size:clamp(1.6rem,2.5vw,2.3rem);margin:0 0 .25rem}
+.rooms-editorial figcaption p{color:#77716a;font-size:1rem;line-height:1.55;margin:0;max-width:38rem}
+.room-gallery{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem 2rem;margin-top:4rem}
+.room-gallery img{aspect-ratio:1.43/1}
+.floorplan-editorial{padding:clamp(6rem,10vw,9rem) 0}
+.floor-grid{display:grid;grid-template-columns:1.15fr .9fr;gap:clamp(3rem,6vw,8rem)}
+.floorplan-editorial h2{font-size:clamp(3rem,5vw,5rem);line-height:1;margin:0 0 1.5rem}
+.floor-intro{font-size:1.14rem;color:#77716a;max-width:34rem;line-height:1.65;margin:0 0 3rem}
+.floor-card{border-radius:25px;border:1px solid #e5e0da;background:#fff;padding:clamp(1rem,2vw,2rem);margin:0}
+.plan-grid{display:grid;grid-template-columns:1.15fr .65fr .85fr;grid-template-rows:70px 120px 100px;gap:2px;background:#39403d;border:2px solid #39403d}
+.plan-room{background:#faf9f6;padding:.6rem;display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;font-size:clamp(.65rem,1vw,.88rem)}
+.plan-room small{font-size:.82em;color:#89847d}.plan-porch{grid-column:1/3;background:#eae6dd}.plan-suite{grid-column:3;grid-row:1/3}.plan-living{grid-column:1;grid-row:2/4}.plan-kitchen{grid-column:2;grid-row:2}.plan-entry{grid-column:2;grid-row:3}.plan-bed{grid-column:3;grid-row:3}
+.floor-card figcaption{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e4e0da;margin-top:1.5rem;padding-top:1rem;font-size:.8rem;color:#77716a}
+.floor-card strong{font-size:1.9rem;color:#201e1b}
+.finish-list>p{border-bottom:1px solid #d9d4ce;margin:1rem 0 0;padding-bottom:1.2rem;color:#77716a}
+.finish-list article{border-bottom:1px solid #d9d4ce;padding:1.7rem 0}
+.finish-list h3{font-size:clamp(2rem,3vw,3rem);margin:0 0 .45rem}
+.finish-list article p{color:#77716a;line-height:1.6;margin:0}
+.cost-editorial{background:#1d1c1a;color:#f5f2ed;padding:clamp(6rem,10vw,10rem) 0}
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(3rem,6vw,8rem);align-items:center}
+.cost-editorial h2{font-size:clamp(2.9rem,5vw,5rem);line-height:1.1;margin:0 0 3rem}
+.cost-row{border-top:1px solid #4c4a46;padding:1.4rem 0;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+.cost-row span,.cost-label{color:#b6b2ab}
+.cost-row strong{font-size:clamp(1.25rem,2.4vw,2rem);text-align:right}
+.cost-label{margin:2.5rem 0 1.25rem}
+.cost-features{display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.95rem}
+.cost-editorial img{width:100%;aspect-ratio:.97/1;object-fit:cover;border-radius:24px}
+.process-brief{background:#fff;color:#211f1d;padding:6rem 0}
+.process-brief h2{font-size:clamp(2.4rem,4.5vw,4rem);margin:0 0 1rem}
+.process-brief p{max-width:42rem;line-height:1.7;color:#77716a;margin-bottom:2rem}
+@media(max-width:800px){.property-stats{grid-template-columns:1fr 1fr;gap:2rem}.room-gallery,.floor-grid,.cost-grid{grid-template-columns:1fr}.room-gallery{gap:2.5rem}.cost-editorial img{aspect-ratio:1.3/1}.plan-grid{grid-template-rows:60px 100px 80px}}
+
 /* content sections */
 section.block{padding:clamp(5rem,11vw,9rem) 0; scroll-snap-align:start}
 .light{background:var(--white); color:var(--black)}
@@ -194,8 +244,8 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
     <a class="mark" href="#top">bmon.ai<span>real estate</span></a>
     <nav aria-label="Main">
       <a href="#demo">Demo</a>
-      <a href="#included">What you get</a>
-      <a href="#how">How it works</a>
+      <a href="#included">Rooms</a>
+      <a href="#editorial">Details</a>
       <a class="btn" href="#book">Book a demo</a>
     </nav>
   </div>
@@ -246,76 +296,58 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   </div>
 </section>
 
-<section class="editorial" id="editorial" aria-labelledby="editorial-title">
-  <div class="wrap editorial-grid">
-    <div>
-      <p class="editorial-kicker">THE HILLSIDE RESIDENCE · CONCEPT LISTING</p>
-      <h2 id="editorial-title">Every room,<br>in its place.</h2>
-      <p class="editorial-intro">An effortless flow from the great room to the kitchen, private suite and the pool beyond. Explore the home's atmosphere, finishes and thoughtful details at your own pace.</p>
-      <figure class="editorial-plan">
-        <div class="plan-grid" role="img" aria-label="Illustrative concept room arrangement, not an architectural floor plan">
-          <div class="plan-room plan-porch"><b>Backyard &amp; pool</b><small>Outdoor living</small></div>
-          <div class="plan-room plan-suite"><b>Primary suite</b><small>Private retreat</small></div>
-          <div class="plan-room plan-living"><b>Great room</b><small>Open living</small></div>
-          <div class="plan-room plan-kitchen"><b>Kitchen</b><small>Island &amp; dining</small></div>
-          <div class="plan-room plan-entry"><b>Arrival</b><small>Main entry</small></div>
-          <div class="plan-room plan-bed"><b>Guest rooms</b><small>Quiet side</small></div>
-        </div>
-        <figcaption><span>Illustrative room arrangement · AI concept</span><strong>8 spaces</strong></figcaption>
-      </figure>
-    </div>
-    <div class="editorial-finishes">
-      <p class="finishes-label">Materials &amp; moments</p>
-      <article><h3>White-oak warmth</h3><p>Natural textures and generous light bring an inviting, lived-in feeling to the great room.</p></article>
-      <article><h3>A sculptural kitchen</h3><p>A waterfall island anchors an open gathering space with a view to the garden.</p></article>
-      <article><h3>Indoor meets outdoor</h3><p>Glass openings draw the eye toward the pool, terrace and hillside beyond.</p></article>
-      <article><h3>Quiet, private spaces</h3><p>A restful suite, considered lighting and a slower pace away from the social rooms.</p></article>
-      <div class="editorial-photos"><img loading="lazy" src="assets/room2.jpg" alt="AI concept rendering of kitchen finishes"><img loading="lazy" src="assets/room6.jpg" alt="AI concept rendering of outdoor pool area"></div>
-    </div>
-  </div>
+<section class="property-intro" id="property" aria-labelledby="property-heading">
+ <div class="property-wrap">
+  <p class="property-location">The Hillside Residence · AI concept property</p>
+  <h2 id="property-heading">A house designed around the light: open living spaces, white-oak warmth, and a seamless view from the great room to the pool.</h2>
+  <div class="property-stats"><div><strong>≈3,000</strong><span>sq ft · illustrative</span></div><div><strong>4 · 3.5</strong><span>bedrooms · baths</span></div><div><strong>2-car</strong><span>garage</span></div><div><strong>8</strong><span>tour spaces</span></div></div>
+  <p class="property-notice">An AI-generated concept listing demonstrating how cinematic property tours can feel. No actual home is offered for sale.</p>
+ </div>
 </section>
-
-<section class="block light" id="included">
-  <div class="wrap">
-    <p class="kicker">What every listing gets</p>
-    <h2 class="big">One shoot of photos. Three ways to sell the house.</h2>
-    <div class="grid3">
-      <div class="item"><span class="no">01</span><h3>Scroll tour page</h3><p class="muted">The experience you just scrolled: a private link for the listing that flies room to room and stops on each space with its details. Drop it in the MLS remarks, your emails and your bio link.</p></div>
-      <div class="item"><span class="no">02</span><h3>Full flythrough film</h3><p class="muted">A continuous film of the same flight, ready for YouTube, your website and the listing presentation you show sellers.</p></div>
-      <div class="item"><span class="no">03</span><h3>Vertical social cuts</h3><p class="muted">Reels and Shorts trimmed from the film, so the listing goes out on Instagram, TikTok and Facebook the day it hits the market.</p></div>
-    </div>
+<section class="rooms-editorial" id="included" aria-labelledby="rooms-heading">
+ <div class="wrap">
+  <h2 id="rooms-heading">Room by room.</h2>
+  <figure class="feature-room"><img src="assets/room0.jpg" loading="lazy" alt="AI-generated concept rendering of the residence arrival"><figcaption><h3>Arrival</h3><p>The first impression: a warm welcome into a thoughtfully composed home.</p></figcaption></figure>
+  <div class="room-gallery">
+   <figure><img src="assets/room1.jpg" loading="lazy" alt="Concept great room"><figcaption><h3>Great room</h3><p>Open living, warm timber and a connection to the garden.</p></figcaption></figure>
+   <figure><img src="assets/room2.jpg" loading="lazy" alt="Concept kitchen"><figcaption><h3>Kitchen</h3><p>A sculptural island forms the heart of the home.</p></figcaption></figure>
+   <figure><img src="assets/room3.jpg" loading="lazy" alt="Concept primary suite"><figcaption><h3>Primary suite</h3><p>A calming private retreat overlooking the outdoors.</p></figcaption></figure>
+   <figure><img src="assets/room6.jpg" loading="lazy" alt="Concept backyard"><figcaption><h3>Backyard</h3><p>A poolside setting designed for gathering and unwinding.</p></figcaption></figure>
   </div>
+ </div>
 </section>
-
-<section class="block" id="how">
-  <div class="wrap">
-    <p class="kicker">How it works</p>
-    <h2 class="big">You send photos. We build the flight.</h2>
-    <ol class="steps">
-      <li><span class="n">1</span><h3>Send the listing photos</h3><p>The same set you'd upload to the MLS. Add a note on the room order and anything that must not change.</p></li>
-      <li><span class="n">2</span><h3>We plan and generate the flight path</h3><p>Each move follows how the home is actually laid out: front door to living room, kitchen to stairs. Where rooms don't physically connect, the transition is marked as a creative cut.</p></li>
-      <li><span class="n">3</span><h3>You review before anything goes live</h3><p>Every frame is checked against your photos for invented features. You approve the tour, the film and the cuts, then publish.</p></li>
-    </ol>
+<section class="floorplan-editorial" id="editorial" aria-labelledby="floor-heading">
+ <div class="wrap floor-grid">
+  <div><h2 id="floor-heading">Every room, in its place.</h2>
+   <p class="floor-intro">From living spaces to quiet retreats, the concept explores a natural rhythm between the house and its surroundings.</p>
+   <figure class="floor-card"><div class="plan-grid" role="img" aria-label="Illustrative concept room arrangement, not an architectural floor plan">
+    <div class="plan-room plan-porch"><b>Pool &amp; terrace</b><small>Outdoor living</small></div>
+    <div class="plan-room plan-suite"><b>Primary suite</b><small>Private retreat</small></div>
+    <div class="plan-room plan-living"><b>Great room</b><small>Open living</small></div>
+    <div class="plan-room plan-kitchen"><b>Kitchen</b><small>Dining &amp; island</small></div>
+    <div class="plan-room plan-entry"><b>Entry</b><small>Arrival</small></div>
+    <div class="plan-room plan-bed"><b>Bedrooms</b><small>Quiet wing</small></div>
+   </div><figcaption><span>Illustrative arrangement · AI concept</span><strong>8 spaces</strong></figcaption></figure>
   </div>
-</section>
-
-<section class="block light" id="compliance">
-  <div class="wrap law">
-    <div>
-      <p class="kicker">Disclosure built in</p>
-      <h2 class="big">AB 723-ready, so the tour helps the listing instead of risking it.</h2>
-    </div>
-    <div>
-      <p class="lede" style="margin-top:0">Since January 1, 2026, California requires listing images that are digitally altered beyond simple fixes to be disclosed, with the unaltered originals available. AI tours change images by definition, so we treat disclosure as part of the product.</p>
-      <ul style="margin-top:1.6rem">
-        <li><b>Visible labeling</b> on the tour page, the film and every social cut.</li>
-        <li><b>A link or QR code to your original photos</b>, included with each tour.</li>
-        <li><b>A check for invented features</b>, such as extra windows, rooms or views, before you see a draft.</li>
-      </ul>
-      <p class="muted" style="font-size:.88rem; margin-top:1.2rem">This is how we build our product, not legal advice. Confirm your obligations with your broker.</p>
-    </div>
+  <div class="finish-list"><p>Finishes</p>
+   <article><h3>White-oak floors</h3><p>Warm textures and wide-plank flooring give the rooms their quiet character.</p></article>
+   <article><h3>Sculptural kitchen</h3><p>A waterfall-style island anchors a bright, welcoming gathering space.</p></article>
+   <article><h3>Expansive glazing</h3><p>Open views connect the interior to the landscape and pool.</p></article>
   </div>
+ </div>
 </section>
+<section class="cost-editorial" id="how" aria-labelledby="cost-heading">
+ <div class="wrap cost-grid">
+  <div><h2 id="cost-heading">The complete picture, up front.</h2>
+   <div class="cost-row"><span>Tour format</span><strong>Interactive</strong></div>
+   <div class="cost-row"><span>Property imagery</span><strong>AI concept</strong></div>
+   <div class="cost-row"><span>Included media</span><strong>Web tour + film + social cuts</strong></div>
+   <p class="cost-label">What BMON delivers</p>
+   <div class="cost-features"><span>✓ Scroll-controlled walkthrough</span><span>✓ Cinematic full film</span><span>✓ Vertical social edits</span><span>✓ Review and disclosure workflow</span></div>
+  </div><img src="assets/room7.jpg" loading="lazy" alt="AI-generated residence exterior and outdoor living at dusk">
+ </div>
+</section>
+<section class="process-brief" aria-labelledby="process-heading"><div class="wrap"><h2 id="process-heading">Your photos. A more memorable showing.</h2><p>Send listing photos and the room sequence. We plan the flight path, produce the experience, and give you a chance to review it before publishing.</p><a class="btn dark" href="#book">Book a personal demo</a></div></section>
 
 <section class="block light booking" id="book" aria-labelledby="booking-title">
   <div class="wrap">
