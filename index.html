@@ -75,8 +75,8 @@ body.loading{overflow:hidden}
 .loader-count{font-size:.85rem;color:var(--grey);font-variant-numeric:tabular-nums}
 #loaderRetry{border:0;border-radius:99px;background:var(--white);color:var(--black);padding:.7rem 1.2rem}
 .shade{position:absolute; inset:0; pointer-events:none; z-index:4;
-  background:linear-gradient(to top, rgba(11,11,11,.85) 0%, rgba(11,11,11,.3) 32%, rgba(11,11,11,0) 52%),
-             linear-gradient(to bottom, rgba(11,11,11,.55) 0%, rgba(11,11,11,0) 18%)}
+  background:linear-gradient(to top, rgba(11,11,11,.68) 0%, rgba(11,11,11,.18) 32%, rgba(11,11,11,0) 52%),
+             linear-gradient(to bottom, rgba(11,11,11,.38) 0%, rgba(11,11,11,0) 18%)}
 .veil{position:absolute; inset:0; z-index:4; background:rgba(11,11,11,.5); pointer-events:none}
 .tag{position:absolute; z-index:6; right:clamp(1.1rem,4vw,3rem); top:calc(78px + env(safe-area-inset-top,0px)); font-size:.75rem; color:var(--soft); border:1px solid rgba(247,247,245,.3); padding:.35rem .65rem; border-radius:99px; background:rgba(11,11,11,.3)}
 .thero{position:absolute; inset:0; z-index:5; display:grid; place-items:center; text-align:center; padding:2rem}
@@ -131,6 +131,14 @@ h2.big{font-weight:500; font-size:clamp(2.2rem,5.4vw,4.4rem); line-height:1; let
 .contact{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:clamp(2rem,5vw,5rem); align-items:start}
 .formslot{border:1px dashed var(--line-d); border-radius:6px; min-height:22rem; padding:1.5rem}
 .formslot:not(:empty){border:none; padding:0}
+.calendar-form{border:1px solid var(--line-d);padding:clamp(1.3rem,3vw,2rem);background:#141414}
+.calendar-form h3{font-family:var(--listing);font-weight:400;font-size:clamp(2rem,4vw,3rem);line-height:1;margin:0 0 .6rem}
+.calendar-form p{color:var(--soft);font-size:.95rem;line-height:1.5;margin:.5rem 0 1.5rem}
+.calendar-fields{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.calendar-form label{display:grid;gap:.45rem;font-size:.85rem;color:var(--soft);margin-bottom:1rem}
+.calendar-form input,.calendar-form select{width:100%;min-width:0;background:#202020;color:var(--white);border:1px solid rgba(247,247,245,.25);border-radius:3px;padding:.75rem;font:inherit;color-scheme:dark}
+.calendar-form .btn{margin-top:.4rem}
+.calendar-form .small{font-size:.8rem;color:var(--grey);margin:1rem 0 0}
 .reach{display:flex; flex-direction:column; gap:.9rem; margin-top:2rem; font-size:1.1rem}
 .reach a{text-decoration:none; border-bottom:1px solid var(--line-d); padding-bottom:.9rem}
 .reach a:hover{color:var(--pool)}
@@ -144,6 +152,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   .steps li{grid-template-columns:3.2rem minmax(0,1fr); }
   .steps li p{grid-column:2}
   .law,.contact{grid-template-columns:1fr}
+  .calendar-fields{grid-template-columns:1fr}
   .rail{display:none}
   .facts li{font-size:.8rem}
 }
@@ -266,8 +275,18 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
         <a href="tel:+12138716004">+1 213-871-6004</a>
       </div>
     </div>
-    <!-- Paste the GoHighLevel form or calendar embed code inside this div -->
-    <div class="formslot" id="ghl-form"></div>
+    <form class="calendar-form" id="bookingForm">
+      <h3>Choose a time to connect.</h3>
+      <p>Pick a preferred date and time. We’ll confirm availability by email.</p>
+      <div class="calendar-fields">
+        <label>Your name<input name="name" autocomplete="name" required></label>
+        <label>Email address<input name="email" type="email" autocomplete="email" required></label>
+        <label>Preferred date<input name="date" type="date" required></label>
+        <label>Preferred time · Pacific<select name="time" required><option value="">Select a time</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option></select></label>
+      </div>
+      <button class="btn" type="submit">Request this time</button>
+      <p class="small">This opens an email request. Your time is confirmed after we reply.</p>
+    </form>
   </div>
 </section>
 </main>
@@ -289,6 +308,10 @@ const $ = id => document.getElementById(id);
 const tour = $('tour'), A = $('A'), B = $('B'), Aimg = $('Aimg'), Bimg = $('Bimg');
 const card = $('card'), thero = $('thero'), veil = $('veil'), rail = $('rail');
 let VH, HOLD, TRANS, SEG, aIdx = -1, bIdx = -1, cardIdx = -1;
+let displayP = null, lastFrameAt = 0, frameRequest = 0;
+function requestRender() {
+  if (!frameRequest) frameRequest = requestAnimationFrame(now => { frameRequest = 0; render(now); });
+}
 
 // nav goes solid once past the hero
 const nav = $('nav');
@@ -395,7 +418,7 @@ const railBtns = ROOMS.map((r, i) => {
 function tourTop() { return tour.getBoundingClientRect().top + scrollY; }
 
 function layout() {
-  VH = innerHeight; HOLD = VH * 0.9; TRANS = VH * 3.6; SEG = HOLD + TRANS;
+  VH = innerHeight; HOLD = VH * 0.9; TRANS = VH * (matchMedia('(pointer: fine)').matches ? 5.2 : 3.6); SEG = HOLD + TRANS;
   tour.style.height = ((STOPS.length - 1) * SEG + HOLD + VH * 1.1) + 'px';
   tour.querySelectorAll('.snap').forEach(n => n.remove());
   STOPS.forEach((s, k) => {
@@ -403,7 +426,7 @@ function layout() {
     m.className = 'snap'; m.style.top = (k * SEG + HOLD * 0.5) + 'px';
     tour.appendChild(m);
   });
-  render();
+  requestRender();
 }
 function goStop(k) { scrollTo({top: tourTop() + k * SEG + HOLD * 0.5, behavior: reduce ? 'auto' : 'smooth'}); }
 
@@ -440,9 +463,18 @@ clipVideos.forEach((video, k) => video.addEventListener('seeked', () => {
   if (Math.abs(video.currentTime - frame) > 1 / 48) video.currentTime = frame;
 }));
 
-function render() {
+function render(now = performance.now()) {
   const top = tourTop();
-  const p = clamp(scrollY - top, 0, (STOPS.length - 1) * SEG + HOLD);
+  const targetP = clamp(scrollY - top, 0, (STOPS.length - 1) * SEG + HOLD);
+  if (displayP === null || reduce) displayP = targetP;
+  else {
+    const elapsed = Math.min(64, Math.max(0, now - lastFrameAt));
+    displayP += (targetP - displayP) * (1 - Math.exp(-elapsed / 85));
+    if (Math.abs(targetP - displayP) < .5) displayP = targetP;
+    else requestRender();
+  }
+  lastFrameAt = now;
+  const p = displayP;
   const k = Math.min(STOPS.length - 1, Math.floor(p / SEG));
   const local = p - k * SEG;
   const inTrans = local > HOLD && k < STOPS.length - 1;
@@ -450,21 +482,17 @@ function render() {
   const t = ease(raw);
 
   setImg(Aimg, k, 'A');
-  const drift = inTrans ? 1 : clamp(local / HOLD);
   if (reduce) {
     A.style.transform = 'none';
     if (inTrans) { setImg(Bimg, k + 1, 'B'); B.style.opacity = t; B.style.transform = 'none'; } else B.style.opacity = 0;
   } else {
-    // fallback zoom while a clip is still loading
-    A.style.transformOrigin = '50% 45%';
-    A.style.transform = `scale(${1.04 + 0.03 * drift + 1.2 * Math.pow(t, 1.6)})`;
-    A.style.filter = `blur(${6 * Math.pow(t, 1.6)}px)`;
+    A.style.transform = 'none';
+    A.style.filter = 'none';
     if (inTrans) {
       setImg(Bimg, k + 1, 'B');
-      const arrive = clamp((raw - 0.42) / 0.58), ea = 1 - Math.pow(1 - arrive, 3);
-      B.style.opacity = clamp((raw - 0.42) / 0.16);
-      B.style.transform = `scale(${1.6 - 0.56 * ea})`;
-      B.style.filter = `blur(${6 * (1 - ea)}px)`;
+      B.style.opacity = tourReady ? 0 : t;
+      B.style.transform = 'none';
+      B.style.filter = 'none';
     } else B.style.opacity = 0;
   }
   if (inTrans && tourReady && !reduce) seekTour(k, raw);
@@ -494,10 +522,18 @@ function render() {
   $('progress').style.width = (p / ((STOPS.length - 1) * SEG + HOLD) * 100) + '%';
 }
 
-let ticking = false;
-addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { render(); ticking = false; }); } }, {passive: true});
+addEventListener('scroll', requestRender, {passive: true});
 addEventListener('resize', layout);
-Aimg.onload = Bimg.onload = () => render();
+Aimg.onload = Bimg.onload = requestRender;
+const bookingForm = $('bookingForm');
+bookingForm.elements.date.min = new Date().toLocaleDateString('en-CA', {timeZone:'America/Los_Angeles'});
+bookingForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const data = new FormData(bookingForm);
+  const subject = encodeURIComponent('Real estate flythrough demo request');
+  const body = encodeURIComponent(`Hello BMON,\n\nI'd like to request a demo call.\n\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPreferred date: ${data.get('date')}\nPreferred time: ${data.get('time')} Pacific\n\nPlease confirm availability.\n`);
+  location.href = `mailto:support@bmon.ai?subject=${subject}&body=${body}`;
+});
 layout();
 </script>
 </body>
