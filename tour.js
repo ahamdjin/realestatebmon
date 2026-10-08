@@ -28,6 +28,7 @@ function preloadNear(index) {
 }
 function displayRoom(index) {
   currentStop=index;
+  stage.classList.remove('is-playing');
   stage.classList.toggle('at-intro',index===0);
   A.style.visibility='visible';
   A.querySelector('img').src=index ? ROOMS[index-1].img : 'assets/hero-poster.jpg';
@@ -60,6 +61,7 @@ function playClip(path) {
     v.addEventListener('ended',finish,{once:true});
     v.addEventListener('error',finish,{once:true});
     v.addEventListener('loadeddata',()=>{
+      stage.classList.add('is-playing');
       v.style.opacity='1';
       stage.classList.remove('at-intro');
       A.style.visibility='hidden';
@@ -98,6 +100,13 @@ function addRoomButton(label,image,index){
  button.append(img,text);button.setAttribute('aria-label','View '+label);
  button.addEventListener('click',()=>goTo(index));rail.appendChild(button);roomButtons.push(button);
 }
+// Clicking the photographic stage advances through rooms. Controls keep their own actions.
+stage.addEventListener('click', event=>{
+  if(busy || event.target.closest('button,a,.room-picker,.card')) return;
+  const next=currentStop>=ROOMS.length ? 0 : currentStop+1;
+  navigateTo(next);
+});
+stage.setAttribute('aria-label','Interactive property tour: click the image to advance');
 addRoomButton('Overview','assets/hero-poster.jpg',0);
 ROOMS.forEach((room,i)=>addRoomButton(room.name,room.img,i+1));
 $('startTour').addEventListener('click',()=>goTo(1));
