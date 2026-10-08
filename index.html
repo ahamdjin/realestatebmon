@@ -65,6 +65,17 @@ img,video{max-width:100%}
 #stage:not(.at-intro) .hero{opacity:0;visibility:hidden}
 #stage .hero video,#stage .hero .poster{width:100%;height:100%;object-fit:cover}
 #stage .hero .wrap{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}
+/* Explicit room navigation; page scrolling stays native */
+#stage .hero .wrap{pointer-events:none}
+#stage .hero .ctas,#stage .hero .ctas>*{pointer-events:auto}
+.rail{z-index:12;max-height:calc(100svh - 120px);overflow-y:auto;opacity:1!important;align-items:flex-end}
+.rail button{color:#fff!important;text-shadow:0 1px 12px rgba(0,0,0,.85);font-weight:600;font-size:.9rem;padding:.55rem 0}
+.rail .nm{opacity:1;transform:none;background:rgba(8,8,8,.4);border-radius:5px;padding:.3rem .55rem;backdrop-filter:blur(5px)}
+.rail button:hover .nm,.rail button.on .nm{background:rgba(8,8,8,.83)}
+.rail .dot{background:#fff;min-width:18px}
+.rail button.on .dot{background:#3fb8b4}
+#stage .rail{display:flex}
+@media(max-width:860px){#stage .rail{display:flex;top:auto;right:0;left:0;bottom:15px;max-height:none;overflow-x:auto;overflow-y:hidden;transform:none;align-items:center;flex-direction:row;justify-content:flex-start;padding:.3rem 1rem;gap:.35rem;scrollbar-width:thin}#stage .rail button{flex:none;white-space:nowrap;padding:.4rem .15rem;font-size:.8rem}#stage .rail .dot{display:none}#stage .rail .nm{padding:.55rem .75rem}}
 /* tour */
 #tour{position:relative; background:var(--black); height:100vh; height:100svh}
 .snap{position:absolute; left:0; width:1px; height:1px; scroll-snap-align:start; pointer-events:none}
@@ -264,14 +275,13 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
     <div class="stage" id="stage">
 <div class="hero" aria-labelledby="h1">
   <img class="poster" src="assets/hero-poster.jpg" alt="">
-  <video id="heroVid" muted playsinline loop preload="none" poster="assets/hero-poster.jpg"></video>
   <div class="wrap">
     <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
     <h1 id="h1">Scroll through the house before the showing.</h1>
     <p class="sub">We turn your listing photos into a flythrough buyers control with their thumb: a scroll-driven web tour, a full film and social cuts, with disclosure built in.</p>
     <div class="ctas">
       <a class="btn" href="#book">Book a demo</a>
-      <a class="btn ghost" href="#demo">Scroll the demo</a>
+      <button class="btn ghost" id="startTour" type="button">Explore the rooms →</button>
     </div>
   </div>
 </div>
@@ -281,21 +291,13 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
       <div class="shade"></div>
       <div class="veil" id="veil"></div>
       <span class="tag">Demo listing, AI-generated concept renders</span>
-      <div class="thero" id="thero">
-        <div>
-          <small>Demo listing</small>
-          <h2>The Hillside<br>Residence</h2>
-          <p>Four bedrooms, a resort backyard and about 3,000 square feet of indoor-outdoor living.</p>
-          <div class="cue">Scroll to fly to the next room<i></i></div>
-        </div>
-      </div>
-      <div class="card" id="card" aria-live="polite">
+            <div class="card" id="card" aria-live="polite">
         <p class="count" id="count"></p>
         <h3 id="name"></h3>
         <p class="line" id="line"></p>
         <ul class="facts" id="facts"></ul>
       </div>
-      <nav class="rail" id="rail" aria-label="Rooms"></nav>
+      <nav class="rail" id="rail" aria-label="Choose a room"></nav>
       <div class="progress" id="progress"></div>
     </div>
   </div>
