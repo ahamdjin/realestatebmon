@@ -185,7 +185,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
     <div class="stage" id="stage">
       <div class="layer" id="A"><img alt="" id="Aimg"></div>
       <div class="layer" id="B"><img alt="" id="Bimg"></div>
-      <div id="flyWrap"><video id="tourVideo" muted playsinline preload="none" aria-hidden="true"></video></div>
+      <div id="flyWrap" aria-hidden="true"></div>
       <div class="shade"></div>
       <div class="veil" id="veil"></div>
       <span class="tag">Demo listing, AI-generated concept renders</span>
@@ -281,9 +281,8 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
 
 <script>
 const ROOMS = [{"name": "Arrival", "line": "Olive trees, cypress and a white oak pivot door set the tone from the street.", "facts": ["4 bedrooms", "3.5 baths", "About 3,000 sq ft", "Two-car garage"], "img": "assets/room0.jpg"}, {"name": "Great room", "line": "Glass pocket doors slide away and the living room becomes part of the yard.", "facts": ["10 ft ceilings", "Wide-plank white oak floors", "Linear gas fireplace", "Full-width pocket doors"], "img": "assets/room1.jpg"}, {"name": "Kitchen", "line": "A quartzite waterfall island built for both cooking and company.", "facts": ["Calacatta quartzite island", "48 in. professional range", "Paneled built-in refrigerator", "Seating for three"], "img": "assets/room2.jpg"}, {"name": "Primary suite", "line": "A beamed, vaulted ceiling and a private balcony over the pool.", "facts": ["Vaulted oak-beam ceiling", "Private balcony", "Pool and hillside views", "Sitting area"], "img": "assets/room3.jpg"}, {"name": "Primary bath", "line": "Soak in the stone tub with the garden just beyond the glass.", "facts": ["Freestanding stone tub", "Travertine walk-in shower", "Double floating vanity", "Garden window"], "img": "assets/room4.jpg"}, {"name": "Bedroom two", "line": "A bright guest room with a built-in desk nook and garden views.", "facts": ["Queen-size layout", "Built-in oak desk", "Front garden outlook", "Natural light all day"], "img": "assets/room5.jpg"}, {"name": "Backyard", "line": "Infinity-edge pool, spa spillover, fire lounge and an outdoor kitchen.", "facts": ["Infinity-edge pool", "Raised spa with waterfall", "Sunken fire lounge", "Covered outdoor kitchen"], "img": "assets/room6.jpg"}, {"name": "After dark", "line": "The same yard at blue hour, with the city lights coming on below.", "facts": ["Lit pool and spa", "Landscape uplighting", "City-light views", "Indoor and outdoor living"], "img": "assets/room7.jpg"}];
-const TOUR_SOURCE = 'source/WhatsApp Video 2026-10-08 at 21.58.34.mp4';
-const TOUR_DURATION = 48.333333;
-const CLIP_DURATION = TOUR_DURATION / ROOMS.length;
+const SCROLL_CLIPS = ROOMS.map((_, i) => `assets/scroll/${i}.mp4`);
+const CLIP_DURATION = 145 / 24;
 const STOPS = [{hero:true, img: ROOMS[7].img}].concat(ROOMS);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = id => document.getElementById(id);
@@ -295,8 +294,22 @@ let VH, HOLD, TRANS, SEG, aIdx = -1, bIdx = -1, cardIdx = -1;
 const nav = $('nav');
 addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > innerHeight * 0.6), {passive: true});
 
-const heroVid = $('heroVid'), tourVideo = $('tourVideo'), filmVid = $('filmVid');
-const assetPaths = ['assets/hero-poster.jpg', 'assets/film-poster.jpg', ...ROOMS.map(r => r.img), 'assets/hero-loop.mp4', 'assets/film.mp4', TOUR_SOURCE];
+const heroVid = $('heroVid'), filmVid = $('filmVid');
+const assetPaths = ['assets/hero-poster.jpg', 'assets/film-poster.jpg', ...ROOMS.map(r => r.img), 'assets/hero-loop.mp4', 'assets/film.mp4', ...SCROLL_CLIPS];
+const clipVideos = SCROLL_CLIPS.map(() => {
+  const video = document.createElement('video');
+  video.muted = true; video.playsInline = true; video.preload = 'none';
+  $('flyWrap').appendChild(video);
+  return video;
+});
+function primeClips() {
+  clipVideos.forEach(video => {
+    if (video._primed || video.readyState < 2) return;
+    const playback = video.play();
+    if (playback) playback.then(() => { video.pause(); video._primed = true; }).catch(() => {});
+  });
+}
+['pointerdown', 'touchstart', 'keydown'].forEach(event => addEventListener(event, primeClips, {passive:true}));
 const loadedAssets = new Map(), received = new Map(), totals = new Map();
 let tourReady = false;
 const loader = $('loader'), loaderBar = $('loaderBar'), loaderCount = $('loaderCount');
@@ -344,13 +357,14 @@ async function prepareTour() {
     filmVid.src = loadedAssets.get('assets/film.mp4');
     heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
     heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
-    tourVideo.src = loadedAssets.get(TOUR_SOURCE);
-    tourVideo.load();
-    await new Promise((resolve, reject) => {
-      if (tourVideo.readyState >= 2) return resolve();
-      tourVideo.addEventListener('loadeddata', resolve, {once:true});
-      tourVideo.addEventListener('error', () => reject(new Error('Tour video could not decode')), {once:true});
-    });
+    await Promise.all(clipVideos.map((video, i) => new Promise((resolve, reject) => {
+      video.src = loadedAssets.get(SCROLL_CLIPS[i]);
+      video.load();
+      if (video.readyState >= 2) return resolve();
+      video.addEventListener('loadeddata', resolve, {once:true});
+      video.addEventListener('error', () => reject(new Error(`Tour clip ${i + 1} could not decode`)), {once:true});
+    })));
+    primeClips();
     await document.fonts.ready;
     tourReady = true;
     if (!reduce) heroVid.play().catch(() => {});
@@ -407,22 +421,24 @@ function fillCard(k) {
   $('facts').innerHTML = r.facts.map(f => `<li>${f}</li>`).join('');
 }
 
-// Follow the original 1080p, 24 fps timeline one frame at a time.
+// Short GOP clips let the browser seek to any 1080p frame without decoding seconds of video.
 let targetTime = 0, activeSegment = -1;
 function seekTour(k, raw) {
   if (!tourReady || reduce) return;
+  if (activeSegment !== k && activeSegment >= 0) clipVideos[activeSegment].style.opacity = 0;
   activeSegment = k;
-  targetTime = Math.min(TOUR_DURATION - 0.05, (k + raw) * CLIP_DURATION);
+  const video = clipVideos[k];
+  targetTime = Math.min(CLIP_DURATION - 0.05, raw * CLIP_DURATION);
   const frame = Math.round(targetTime * 24) / 24;
-  if (!tourVideo.seeking && Math.abs(tourVideo.currentTime - frame) > 1 / 48) tourVideo.currentTime = frame;
-  tourVideo.style.opacity = 1;
+  if (!video.seeking && Math.abs(video.currentTime - frame) > 1 / 48) video.currentTime = frame;
+  video.style.opacity = 1;
   A.style.visibility = B.style.visibility = 'hidden';
 }
-tourVideo.addEventListener('seeked', () => {
-  if (activeSegment < 0) return;
+clipVideos.forEach((video, k) => video.addEventListener('seeked', () => {
+  if (activeSegment !== k) return;
   const frame = Math.round(targetTime * 24) / 24;
-  if (Math.abs(tourVideo.currentTime - frame) > 1 / 48) tourVideo.currentTime = frame;
-});
+  if (Math.abs(video.currentTime - frame) > 1 / 48) video.currentTime = frame;
+}));
 
 function render() {
   const top = tourTop();
@@ -453,8 +469,8 @@ function render() {
   }
   if (inTrans && tourReady && !reduce) seekTour(k, raw);
   else {
+    if (activeSegment >= 0) clipVideos[activeSegment].style.opacity = 0;
     activeSegment = -1;
-    tourVideo.style.opacity = 0;
     A.style.visibility = B.style.visibility = 'visible';
   }
 

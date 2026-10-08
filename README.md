@@ -1,6 +1,6 @@
 # RealEstateBMON
 
-A scroll controlled, 1080p real estate tour. The page downloads and decodes its images and video before opening the experience.
+A scroll controlled, 1080p real estate tour. The page downloads and decodes its images and video before opening the experience. The eight scroll clips preserve the supplied video's 24 fps frames and add frequent keyframes so browser seeking responds quickly.
 
 ## Local preview
 
