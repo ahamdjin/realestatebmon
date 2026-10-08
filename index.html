@@ -100,6 +100,29 @@ img,video{max-width:100%}
  #stage .hero h1{font-size:clamp(2.1rem,9vw,3.4rem)}
  #stage .card{bottom:105px}
 }
+
+/* Immersive click-to-explore experience */
+#stage{cursor:pointer}
+#stage .hero{pointer-events:none}
+#stage .hero .ctas,#stage .hero .ctas>*{pointer-events:auto}
+#stage #flyWrap{position:absolute;inset:0;z-index:35;pointer-events:none}
+#stage #flyWrap video{width:100%;height:100%;object-fit:cover;filter:none!important;mix-blend-mode:normal;brightness:1}
+#stage.is-playing #flyWrap{background:#000}
+#stage.is-playing .hero,#stage.is-playing .card,#stage.is-playing .room-picker,#stage.is-playing .tag,#stage.is-playing .shade,#stage.is-playing .veil,#stage.is-playing .progress{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#stage.is-playing .room-picker{z-index:1!important}
+#stage .room-picker{position:absolute;z-index:20;right:clamp(.75rem,2vw,2rem);top:50%;transform:translateY(-50%);width:clamp(112px,11vw,154px);display:flex;flex-direction:column;gap:.5rem;transition:opacity .2s,visibility .2s}
+#stage .room-picker-title{margin:0;color:white;background:rgba(12,12,12,.63);backdrop-filter:blur(9px);padding:.65rem .55rem;border-radius:8px;font-size:.78rem;font-weight:600;line-height:1.35;text-align:center;text-shadow:0 1px 4px #000}
+#stage .room-picker-hint{margin:0;font-size:.68rem;line-height:1.4;text-align:center;color:white;text-shadow:0 1px 5px #000}
+#stage .room-picker .rail{position:static!important;right:auto!important;left:auto!important;top:auto!important;bottom:auto!important;transform:none!important;width:100%!important;max-height:min(69svh,680px);overflow:auto;display:flex;flex-direction:column;padding:2px;gap:.5rem}
+#stage .room-picker .rail button{width:100%}
+@media(max-width:860px){
+ #stage .room-picker{top:auto;bottom:10px;left:0;right:0;transform:none;width:100%;gap:.25rem}
+ #stage .room-picker-title{background:rgba(12,12,12,.63);align-self:center;padding:.35rem .8rem;font-size:.72rem}
+ #stage .room-picker-hint{display:none}
+ #stage .room-picker .rail{flex-direction:row;overflow-x:auto;overflow-y:hidden;max-height:none;gap:.5rem;padding:.4rem 1rem}
+ #stage .room-picker .rail button{width:auto;flex:0 0 98px}
+}
+
 /* tour */
 #tour{position:relative; background:var(--black); height:100vh; height:100svh}
 .snap{position:absolute; left:0; width:1px; height:1px; scroll-snap-align:start; pointer-events:none}
@@ -302,7 +325,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
   <div class="wrap">
     <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
     <h1 id="h1">Step inside.</h1>
-    <p class="sub">Explore the residence, one room at a time.</p>
+    <p class="sub">Explore the residence, one room at a time. Tap anywhere on the image to begin.</p>
     <div class="ctas">
       <a class="btn" href="#book">Book a demo</a>
       <button class="btn ghost" id="startTour" type="button">Explore rooms →</button>
@@ -321,7 +344,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
         <p class="line" id="line"></p>
         <ul class="facts" id="facts"></ul>
       </div>
-      <nav class="rail" id="rail" aria-label="Choose a room"></nav>
+      <div class="room-picker" id="roomPicker"><p class="room-picker-title">Where would you like to go?</p><nav class="rail" id="rail" aria-label="Choose a room"></nav><p class="room-picker-hint">Select a room or tap the image to continue</p></div>
       <div class="progress" id="progress"></div>
     </div>
   </div>
