@@ -110,7 +110,8 @@ function showStop(index) {
   A.style.transform = 'none';
   A.style.filter = 'none';
   B.style.visibility = 'hidden';
-  thero.style.opacity = index === 0 ? 1 : 0;
+  stage.classList.toggle('at-intro', index === 0);
+  thero.style.opacity = 0;
   $('veil').style.opacity = index === 0 ? 1 : 0;
   document.querySelector('.shade').style.opacity = 1;
   card.style.opacity = index === 0 ? 0 : 1;
@@ -140,6 +141,7 @@ async function playTo(index) {
     return;
   }
   playing = true;
+  stage.classList.remove('at-intro');
   const forward = index > currentStop;
   const video = forward ? forwardVideos[currentStop] : reverseVideos[index];
   let finished = false;
@@ -242,7 +244,7 @@ const heroObserver = new IntersectionObserver(([entry]) => {
   if (entry.isIntersecting) heroVid.play().catch(() => {});
   else heroVid.pause();
 }, {threshold:.05});
-heroObserver.observe(document.querySelector('.hero'));
+heroObserver.observe(tour);
 async function prepareTour() {
   $('loaderRetry').hidden = true;
   $('loaderMessage').textContent = 'Downloading the full experience';
