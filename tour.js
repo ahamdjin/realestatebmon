@@ -2,13 +2,13 @@ const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const tour = $('tour'), stage = $('stage'), A = $('A'), B = $('B');
 const card = $('card'), thero = $('thero'), rail = $('rail');
-const heroVid = $('heroVid'), filmVid = $('filmVid');
+const heroVid = $('heroVid');
 const forwardPaths = ROOMS.map((_, i) => `assets/scroll/${i}.mp4`);
 const reversePaths = ROOMS.map((_, i) => `assets/reverse/${i}.mp4`);
 const assetPaths = [
-  'assets/hero-poster.jpg', 'assets/film-poster.jpg',
+  'assets/hero-poster.jpg',
   ...ROOMS.map(room => room.img),
-  'assets/hero-loop.mp4', 'assets/film.mp4',
+  'assets/hero-loop.mp4',
   ...forwardPaths, ...reversePaths
 ];
 const loadedAssets = new Map(), received = new Map(), totals = new Map();
@@ -253,8 +253,6 @@ async function prepareTour() {
     document.querySelector('.poster').src = loadedAssets.get('assets/hero-poster.jpg');
     heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
     heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
-    filmVid.poster = loadedAssets.get('assets/film-poster.jpg');
-    filmVid.src = loadedAssets.get('assets/film.mp4');
     await Promise.all([loadVideo(forwardVideos[0]), document.fonts.ready]);
     showStop(0);
     if (!reduceMotion && document.querySelector('.hero').getBoundingClientRect().bottom > 0) heroVid.play().catch(() => {});
