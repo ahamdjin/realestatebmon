@@ -107,6 +107,28 @@ body.loading{overflow:hidden}
 .rail button.on .dot{width:40px; background:var(--pool)}
 .progress{position:absolute; z-index:6; left:0; bottom:0; height:3px; background:var(--pool); width:0}
 
+/* Architectural editorial interlude */
+.editorial{background:#f3f0ec;color:#201f1d;padding:clamp(5rem,9vw,9rem) 0}
+.editorial-grid{display:grid;grid-template-columns:1.2fr .88fr;gap:clamp(3rem,7vw,8rem);align-items:start}
+.editorial-kicker{color:#797570;font-size:.75rem;letter-spacing:.15em;margin:0 0 1.5rem}
+.editorial h2,.editorial h3,.editorial-plan strong{font-family:var(--listing);font-weight:400}
+.editorial h2{font-size:clamp(3.4rem,6.5vw,6.3rem);line-height:.95;letter-spacing:-.035em;margin:0 0 1.65rem}
+.editorial-intro{font-size:clamp(1.05rem,1.4vw,1.23rem);line-height:1.65;color:#6c6862;max-width:35rem;margin-bottom:3rem}
+.editorial-plan{margin:0;background:#fdfcfa;border:1px solid #e5e0da;border-radius:26px;padding:clamp(1.1rem,2.6vw,2rem)}
+.plan-grid{display:grid;grid-template-columns:1.15fr .65fr .85fr;grid-template-rows:75px 135px 115px;gap:2px;background:#383e3d;border:2px solid #383e3d}
+.plan-room{background:#faf9f6;padding:.8rem;display:flex;flex-direction:column;align-items:flex-start;gap:.2rem;font-size:clamp(.7rem,1.1vw,.94rem)}
+.plan-room small{font-size:.78em;color:#87847e}
+.plan-porch{grid-column:1/3;background:#eae6dd}.plan-suite{grid-column:3;grid-row:1/3}.plan-living{grid-column:1;grid-row:2/4}.plan-kitchen{grid-column:2;grid-row:2}.plan-entry{grid-column:2;grid-row:3}.plan-bed{grid-column:3;grid-row:3}
+.editorial-plan figcaption{border-top:1px solid #e4e0db;margin-top:1.5rem;padding-top:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#77716a;font-size:.85rem}
+.editorial-plan strong{font-size:1.7rem;color:#252320}
+.finishes-label{font-size:.9rem;color:#797570;border-bottom:1px solid #dad5cf;margin:1rem 0 0;padding-bottom:1.2rem}
+.editorial-finishes article{padding:1.4rem 0 1.6rem;border-bottom:1px solid #dad5cf}
+.editorial-finishes h3{font-size:clamp(1.9rem,3vw,2.7rem);line-height:1.1;margin:0 0 .6rem}
+.editorial-finishes article p{color:#77716a;line-height:1.6;margin:0;font-size:1.04rem}
+.editorial-photos{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem}
+.editorial-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
+@media(max-width:860px){.editorial-grid{grid-template-columns:1fr;gap:3rem}.editorial-plan{padding:1rem}.plan-grid{grid-template-rows:65px 105px 85px}.plan-room{padding:.4rem}.editorial h2{font-size:clamp(3.2rem,13vw,5.5rem)}}
+
 /* content sections */
 section.block{padding:clamp(5rem,11vw,9rem) 0; scroll-snap-align:start}
 .light{background:var(--white); color:var(--black)}
@@ -224,6 +246,35 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   </div>
 </section>
 
+<section class="editorial" id="editorial" aria-labelledby="editorial-title">
+  <div class="wrap editorial-grid">
+    <div>
+      <p class="editorial-kicker">THE HILLSIDE RESIDENCE · CONCEPT LISTING</p>
+      <h2 id="editorial-title">Every room,<br>in its place.</h2>
+      <p class="editorial-intro">An effortless flow from the great room to the kitchen, private suite and the pool beyond. Explore the home's atmosphere, finishes and thoughtful details at your own pace.</p>
+      <figure class="editorial-plan">
+        <div class="plan-grid" role="img" aria-label="Illustrative concept room arrangement, not an architectural floor plan">
+          <div class="plan-room plan-porch"><b>Backyard &amp; pool</b><small>Outdoor living</small></div>
+          <div class="plan-room plan-suite"><b>Primary suite</b><small>Private retreat</small></div>
+          <div class="plan-room plan-living"><b>Great room</b><small>Open living</small></div>
+          <div class="plan-room plan-kitchen"><b>Kitchen</b><small>Island &amp; dining</small></div>
+          <div class="plan-room plan-entry"><b>Arrival</b><small>Main entry</small></div>
+          <div class="plan-room plan-bed"><b>Guest rooms</b><small>Quiet side</small></div>
+        </div>
+        <figcaption><span>Illustrative room arrangement · AI concept</span><strong>8 spaces</strong></figcaption>
+      </figure>
+    </div>
+    <div class="editorial-finishes">
+      <p class="finishes-label">Materials &amp; moments</p>
+      <article><h3>White-oak warmth</h3><p>Natural textures and generous light bring an inviting, lived-in feeling to the great room.</p></article>
+      <article><h3>A sculptural kitchen</h3><p>A waterfall island anchors an open gathering space with a view to the garden.</p></article>
+      <article><h3>Indoor meets outdoor</h3><p>Glass openings draw the eye toward the pool, terrace and hillside beyond.</p></article>
+      <article><h3>Quiet, private spaces</h3><p>A restful suite, considered lighting and a slower pace away from the social rooms.</p></article>
+      <div class="editorial-photos"><img loading="lazy" src="assets/room2.jpg" alt="AI concept rendering of kitchen finishes"><img loading="lazy" src="assets/room6.jpg" alt="AI concept rendering of outdoor pool area"></div>
+    </div>
+  </div>
+</section>
+
 <section class="block light" id="included">
   <div class="wrap">
     <p class="kicker">What every listing gets</p>
@@ -245,10 +296,6 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
       <li><span class="n">2</span><h3>We plan and generate the flight path</h3><p>Each move follows how the home is actually laid out: front door to living room, kitchen to stairs. Where rooms don't physically connect, the transition is marked as a creative cut.</p></li>
       <li><span class="n">3</span><h3>You review before anything goes live</h3><p>Every frame is checked against your photos for invented features. You approve the tour, the film and the cuts, then publish.</p></li>
     </ol>
-    <div class="filmbox">
-      <video id="filmVid" controls playsinline preload="none" poster="assets/film-poster.jpg"></video>
-    </div>
-    <p class="muted" style="margin-top:1rem; font-size:.92rem">The full film from the demo listing above. Concept renders, AI-generated.</p>
   </div>
 </section>
 
