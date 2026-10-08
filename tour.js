@@ -271,6 +271,11 @@ async function prepareTour() {
     document.body.classList.remove('loading');
     loader.classList.add('done');
     setTimeout(() => loader.remove(), 600);
+    const chatWidget = document.createElement('script');
+    chatWidget.src = 'https://widgets.leadconnectorhq.com/loader.js';
+    chatWidget.dataset.resourcesUrl = 'https://widgets.leadconnectorhq.com/chat-widget/loader.js';
+    chatWidget.dataset.widgetId = '6ac7e9f2b17ff091c6e93d95';
+    $('ai-widget-slot').appendChild(chatWidget);
   } catch (error) {
     $('loaderMessage').textContent = `Download failed: ${error.message}`;
     $('loaderRetry').hidden = false;

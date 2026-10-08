@@ -142,6 +142,10 @@ h2.big{font-weight:500; font-size:clamp(2.2rem,5.4vw,4.4rem); line-height:1; let
 .reach{display:flex; flex-direction:column; gap:.9rem; margin-top:2rem; font-size:1.1rem}
 .reach a{text-decoration:none; border-bottom:1px solid var(--line-d); padding-bottom:.9rem}
 .reach a:hover{color:var(--pool)}
+.ai-contact{border-top:1px solid var(--line-d);padding:clamp(4rem,8vw,6rem) 0;text-align:center}
+.ai-contact h2{font-family:var(--listing);font-weight:400;font-size:clamp(2.6rem,6vw,5rem);line-height:1;margin:0 auto;max-width:18ch}
+.ai-contact .lede{margin:1.2rem auto 1.5rem}
+#ai-widget-slot{min-height:8rem}
 footer{border-top:1px solid var(--line-d); padding:2.5rem 0 calc(2.5rem + env(safe-area-inset-bottom,0px)); font-size:.88rem; color:var(--grey); scroll-snap-align:end}
 footer .wrap{display:flex; flex-wrap:wrap; gap:1rem 2rem; justify-content:space-between}
 footer p{margin:0; max-width:44rem; line-height:1.6}
@@ -267,16 +271,16 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
 <section class="block" id="book">
   <div class="wrap contact">
     <div>
-      <p class="kicker">Book a demo</p>
-      <h2 class="big">See it on one of your listings.</h2>
-      <p class="lede muted">Send us an active or upcoming listing and we'll show you what its flythrough could look like.</p>
+      <p class="kicker">Your listing, reimagined</p>
+      <h2 class="big">See what an AI flythrough could do for your listing.</h2>
+      <p class="lede muted">Have an active or upcoming listing? Request a demo time here, or ask our AI assistant a question below.</p>
       <div class="reach">
         <a href="mailto:support@bmon.ai?subject=Flythrough%20tour%20demo">support@bmon.ai</a>
         <a href="tel:+12138716004">+1 213-871-6004</a>
       </div>
     </div>
     <form class="calendar-form" id="bookingForm">
-      <h3>Choose a time to connect.</h3>
+      <h3>Request a demo time.</h3>
       <p>Pick a preferred date and time. We’ll confirm availability by email.</p>
       <div class="calendar-fields">
         <label>Your name<input name="name" autocomplete="name" required></label>
@@ -287,6 +291,14 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
       <button class="btn" type="submit">Request this time</button>
       <p class="small">This opens an email request. Your time is confirmed after we reply.</p>
     </form>
+  </div>
+</section>
+<section class="ai-contact" id="ask-ai" aria-labelledby="ask-ai-title">
+  <div class="wrap">
+    <p class="kicker">Questions before you book?</p>
+    <h2 id="ask-ai-title">Talk to our AI assistant.</h2>
+    <p class="lede muted">Use the call button below to ask about the tour. For a demo built around your listing, request a time above.</p>
+    <div id="ai-widget-slot"></div>
   </div>
 </section>
 </main>
