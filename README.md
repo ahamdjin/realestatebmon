@@ -1,6 +1,6 @@
 # RealEstateBMON
 
-A scroll triggered, 1080p real estate tour. The page downloads its images and media before opening. A scroll gesture plays a complete transition at normal speed, then holds on the next room. Reverse clips play when scrolling back.
+A guided 1080p real estate tour. Each room transition is drawn frame by frame to a canvas from a 60 fps interpolated clip at 2× speed, so the movement takes about 3 seconds and can show up to 120 distinct frames per second on a 120 Hz display. Choosing a distant room plays every intervening transition in order. Nearby clips preload while the page remains available.
 
 The booking section embeds the Bmon.AI HighLevel calendar for live appointment selection.
 

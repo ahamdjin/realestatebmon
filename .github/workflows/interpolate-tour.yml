@@ -22,12 +22,17 @@ jobs:
           shopt -s nullglob
           files=(assets/scroll/*.mp4 assets/reverse/*.mp4)
           for input in "${files[@]}"; do
+            rate=$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 "$input")
+            if [[ "$rate" == "60/1" ]]; then
+              echo "Already 60fps: $input"
+              continue
+            fi
             echo "Interpolating $input to 60fps"
             output="${input%.mp4}.new.mp4"
             ffmpeg -hide_banner -loglevel warning -y -i "$input" \
               -map 0:v:0 -map 0:a? \
               -vf "minterpolate=fps=60:mi_mode=mci:mc_mode=obmc:me_mode=bidir" \
-              -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart \
+              -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -movflags +faststart \
               -c:a copy "$output"
             mv "$output" "$input"
           done
