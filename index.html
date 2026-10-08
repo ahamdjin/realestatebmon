@@ -107,10 +107,9 @@ img,video{max-width:100%}
 #stage .hero .ctas,#stage .hero .ctas>*{pointer-events:auto}
 #stage #flyWrap{position:absolute;inset:0;z-index:35;pointer-events:none}
 #stage #flyWrap video{width:100%;height:100%;object-fit:cover;filter:none!important;mix-blend-mode:normal;brightness:1}
-#stage #flyWrap canvas.tour-frames{display:block;width:100%;height:100%;object-fit:cover;filter:none!important;position:absolute;inset:0}
-#stage.is-playing #flyWrap{background:#000}
+#stage #flyWrap canvas.tour-frames{display:block;width:100%;height:100%;object-fit:cover;filter:none!important;position:absolute;inset:0;transition:opacity .18s linear}
+#stage.is-playing #flyWrap{background:transparent}
 #stage.is-playing .hero,#stage.is-playing .card,#stage.is-playing .room-picker,#stage.is-playing .tag,#stage.is-playing .shade,#stage.is-playing .veil,#stage.is-playing .progress{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
-#stage.is-sequencing .hero,#stage.is-sequencing .card,#stage.is-sequencing .room-picker,#stage.is-sequencing .tag,#stage.is-sequencing .shade,#stage.is-sequencing .veil,#stage.is-sequencing .progress{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 #stage.is-playing .room-picker{z-index:1!important}
 #stage .room-picker{position:absolute;z-index:20;right:clamp(.75rem,2vw,2rem);top:50%;transform:translateY(-50%);width:clamp(112px,11vw,154px);display:flex;flex-direction:column;gap:.5rem;transition:opacity .2s,visibility .2s}
 #stage .room-picker-title{margin:0;color:white;background:rgba(12,12,12,.63);backdrop-filter:blur(9px);padding:.65rem .55rem;border-radius:8px;font-size:.78rem;font-weight:600;line-height:1.35;text-align:center;text-shadow:0 1px 4px #000}

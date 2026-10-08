@@ -61,13 +61,10 @@ function displayRoom(index) {
   preloadNear(index);
 }
 // Each interpolated 60 fps clip is decoded into individual canvas frames.
-// A one-room move plays at 2x; longer journeys use one higher rate throughout.
+// A room selection plays only the transition into that room at 2x speed.
 // Displayed frames are limited by the device refresh rate.
 const TOUR_PLAYBACK_RATE = 2;
-function tripPlaybackRate(distance) {
-  return distance <= 1 ? TOUR_PLAYBACK_RATE : Math.min(8, distance + 2);
-}
-function playFrameSequence(path, playbackRate = TOUR_PLAYBACK_RATE) {
+function playFrameSequence(path) {
   return new Promise(resolve => {
     const video = transitionVideo(path);
     const canvas = document.createElement('canvas');
@@ -95,8 +92,9 @@ function playFrameSequence(path, playbackRate = TOUR_PLAYBACK_RATE) {
       if (finished) return;
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
+      canvas.style.opacity = '0';
       $('flyWrap').appendChild(canvas);
-      video.playbackRate = playbackRate;
+      video.playbackRate = TOUR_PLAYBACK_RATE;
       const draw = () => {
         if (finished) return;
         if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -105,8 +103,8 @@ function playFrameSequence(path, playbackRate = TOUR_PLAYBACK_RATE) {
             started = true;
             stage.classList.add('is-playing');
             stage.classList.remove('at-intro');
-            A.style.visibility = 'hidden';
             card.style.opacity = '0';
+            requestAnimationFrame(() => { canvas.style.opacity = '1'; });
           }
         }
         frameRequest = requestAnimationFrame(draw);
@@ -127,19 +125,14 @@ async function navigateTo(index) {
   nextTarget=Math.max(0,Math.min(ROOMS.length,index));
   if(busy)return;
   busy=true;
-  const distance = Math.abs(nextTarget-currentStop);
-  const playbackRate = tripPlaybackRate(distance);
-  stage.classList.toggle('is-sequencing',distance>1);
   while(currentStop!==nextTarget){
-    const direction=Math.sign(nextTarget-currentStop);
-    const following=currentStop+direction;
-    if(reduceMotion){displayRoom(following);continue;}
-    // Step through every intervening room to preserve spatial continuity.
-    const path=direction>0 ? paths[currentStop] : reversePaths[following];
-    await playFrameSequence(path,playbackRate);
-    displayRoom(following);
+    const target=nextTarget;
+    if(reduceMotion){displayRoom(target);continue;}
+    // Play only the clip that arrives at the selected room.
+    const path=target>currentStop ? paths[target-1] : reversePaths[target];
+    await playFrameSequence(path);
+    displayRoom(target);
   }
-  stage.classList.remove('is-sequencing');
   busy=false;
 }
 function goTo(index) {
