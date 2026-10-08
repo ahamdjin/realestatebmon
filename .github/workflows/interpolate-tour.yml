@@ -1,0 +1,50 @@
+name: Interpolate tour motion to 60 FPS
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  interpolate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Interpolate flythrough clips
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(assets/scroll/*.mp4 assets/reverse/*.mp4)
+          for input in "${files[@]}"; do
+            echo "Interpolating $input to 60fps"
+            output="${input%.mp4}.new.mp4"
+            ffmpeg -hide_banner -loglevel warning -y -i "$input" \
+              -map 0:v:0 -map 0:a? \
+              -vf "minterpolate=fps=60:mi_mode=mci:mc_mode=obmc:me_mode=bidir" \
+              -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart \
+              -c:a copy "$output"
+            mv "$output" "$input"
+          done
+      - name: Verify clip frame rates
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in assets/scroll/*.mp4 assets/reverse/*.mp4; do
+            echo -n "$f: "
+            ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 "$f"
+          done
+      - name: Commit new motion clips
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/scroll assets/reverse
+          if ! git diff --cached --quiet; then
+            git commit -m "Render tour movement at 60 FPS with optical-flow interpolation"
+            git push
+          fi
