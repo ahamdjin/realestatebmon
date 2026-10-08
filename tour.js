@@ -1,276 +1,117 @@
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const tour = $('tour'), stage = $('stage'), A = $('A'), B = $('B');
-const card = $('card'), thero = $('thero'), rail = $('rail');
-const heroVid = $('heroVid');
-const forwardPaths = ROOMS.map((_, i) => `assets/scroll/${i}.mp4`);
-const reversePaths = ROOMS.map((_, i) => `assets/reverse/${i}.mp4`);
-const assetPaths = [
-  'assets/hero-poster.jpg',
-  ...ROOMS.map(room => room.img),
-  'assets/hero-loop.mp4',
-  ...forwardPaths, ...reversePaths
-];
-const loadedAssets = new Map(), received = new Map(), totals = new Map();
-const loader = $('loader'), loaderBar = $('loaderBar'), loaderCount = $('loaderCount');
-let currentStop = 0, playing = false, activeVideo = null;
-let lastWheelAt = 0, touchStartY = null;
+const tour = $('tour'), stage = $('stage'), A = $('A'), B = $('B'), rail = $('rail'), card = $('card');
+const introPoster = document.querySelector('.hero .poster');
+const count = $('count'), nameEl = $('name'), line = $('line'), facts = $('facts');
+let currentStop = 0, busy = false, nextTarget = 0, activeVideo = null;
+const roomButtons = [];
+const paths = ROOMS.map((_,i)=>'assets/scroll/'+i+'.mp4');
+const reversePaths = ROOMS.map((_,i)=>'assets/reverse/'+i+'.mp4');
 
-function videoFor(path) {
-  const video = document.createElement('video');
-  video.muted = true;
-  video.playsInline = true;
-  video.preload = 'metadata';
-  video.dataset.path = path;
-  $('flyWrap').appendChild(video);
-  return video;
+// Unlike the previous version, do NOT fetch all media before revealing the page.
+function transitionVideo(path) {
+  const v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.preload = 'auto';
+  v.src = path; v.style.opacity = '0';
+  $('flyWrap').appendChild(v);
+  return v;
 }
-const forwardVideos = forwardPaths.map(videoFor);
-const reverseVideos = reversePaths.map(videoFor);
-
-function updateLoading() {
-  const total = [...totals.values()].reduce((a, b) => a + b, 0);
-  const done = [...received.values()].reduce((a, b) => a + b, 0);
-  const percent = Math.min(99, Math.floor((total ? done / total : loadedAssets.size / assetPaths.length) * 100));
-  loaderBar.style.width = `${percent}%`;
-  loaderCount.textContent = `${percent}% · ${loadedAssets.size} of ${assetPaths.length} assets`;
-}
-
-async function fetchAsset(path) {
-  if (loadedAssets.has(path)) return loadedAssets.get(path);
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
-  const size = Number(response.headers.get('content-length')) || 0;
-  totals.set(path, size);
-  let blob;
-  if (response.body && size) {
-    const reader = response.body.getReader(), chunks = [];
-    let count = 0;
-    while (true) {
-      const {done, value} = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      count += value.byteLength;
-      received.set(path, count);
-      updateLoading();
+function preloadNear(index) {
+  [paths[index],reversePaths[index-1]].filter(Boolean).forEach(path=>{
+    if(!document.querySelector('link[data-tour-preload="'+path+'"]')){
+      const link=document.createElement('link'); link.rel='preload'; link.as='video';
+      link.href=path; link.dataset.tourPreload=path;
+      // Browser support varies, but normal video streaming remains the fallback.
+      document.head.appendChild(link);
     }
-    blob = new Blob(chunks, {type: path.endsWith('.mp4') ? 'video/mp4' : (response.headers.get('content-type') || 'application/octet-stream')});
-  } else {
-    blob = await response.blob();
-    received.set(path, blob.size);
-    totals.set(path, blob.size);
-  }
-  if (path.endsWith('.mp4') && blob.type !== 'video/mp4') blob = blob.slice(0, blob.size, 'video/mp4');
-  const url = URL.createObjectURL(blob);
-  if (!path.endsWith('.mp4')) {
-    const image = new Image();
-    image.src = url;
-    await image.decode();
-  }
-  loadedAssets.set(path, url);
-  updateLoading();
-  return url;
-}
-
-function loadVideo(video) {
-  if (video._ready) return video._ready;
-  video._ready = new Promise((resolve, reject) => {
-    video.addEventListener('loadeddata', resolve, {once:true});
-    video.addEventListener('error', () => reject(new Error(`${video.dataset.path} could not decode`)), {once:true});
-    video.src = loadedAssets.get(video.dataset.path);
-    video.load();
   });
-  return video._ready;
 }
-
-function prepareAdjacent() {
-  const needed = new Set();
-  if (currentStop < ROOMS.length) needed.add(forwardVideos[currentStop]);
-  if (currentStop > 0) needed.add(reverseVideos[currentStop - 1]);
-  [...forwardVideos, ...reverseVideos].forEach(video => {
-    if (needed.has(video) || !video._ready || video.readyState < 2) return;
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
-    video._ready = null;
+function displayRoom(index) {
+  currentStop=index;
+  stage.classList.toggle('at-intro',index===0);
+  A.style.visibility='visible';
+  A.querySelector('img').src=index ? ROOMS[index-1].img : 'assets/hero-poster.jpg';
+  B.style.visibility='hidden';
+  card.style.opacity=index===0?'0':'1';
+  const shade=document.querySelector('.shade');
+  shade.style.opacity='1';
+  $('veil').style.opacity=index===0?'1':'0';
+  if(index){
+    const room=ROOMS[index-1];
+    count.textContent=index+' of '+ROOMS.length;
+    nameEl.textContent=room.name;
+    line.textContent=room.line;
+    facts.replaceChildren(...room.facts.map(value=>{const li=document.createElement('li');li.textContent=value;return li}));
+  }
+  roomButtons.forEach((button,i)=>{button.classList.toggle('on',i===index);button.setAttribute('aria-current',i===index?'true':'false')});
+  $('progress').style.width=(index/ROOMS.length*100)+'%';
+  preloadNear(index);
+}
+function playClip(path) {
+  return new Promise(resolve=>{
+    const v=transitionVideo(path);
+    activeVideo=v;
+    let finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;
+      v.pause();v.remove();if(activeVideo===v)activeVideo=null;resolve();
+    };
+    v.addEventListener('ended',finish,{once:true});
+    v.addEventListener('error',finish,{once:true});
+    v.addEventListener('loadeddata',()=>{
+      v.style.opacity='1';
+      stage.classList.remove('at-intro');
+      A.style.visibility='hidden';
+      card.style.opacity='0';
+      document.querySelector('.shade').style.opacity='0';
+      v.play().catch(finish);
+    },{once:true});
+    // Never trap the visitor behind a clip that stalls.
+    setTimeout(finish,15000);
   });
-  if (currentStop < ROOMS.length) loadVideo(forwardVideos[currentStop]).catch(() => {});
-  if (currentStop > 0) loadVideo(reverseVideos[currentStop - 1]).catch(() => {});
 }
-
-function showStop(index) {
-  currentStop = index;
-  if (activeVideo) {
-    activeVideo.pause();
-    activeVideo.style.opacity = 0;
-    activeVideo = null;
+async function navigateTo(index) {
+  nextTarget=Math.max(0,Math.min(ROOMS.length,index));
+  if(busy)return;
+  busy=true;
+  while(currentStop!==nextTarget){
+    const direction=Math.sign(nextTarget-currentStop);
+    const following=currentStop+direction;
+    if(reduceMotion){displayRoom(following);continue;}
+    // Step through every intervening room to preserve spatial continuity.
+    const path=direction>0 ? paths[currentStop] : reversePaths[following];
+    await playClip(path);
+    displayRoom(following);
   }
-  $('Aimg').src = loadedAssets.get(index ? ROOMS[index - 1].img : ROOMS[7].img);
-  A.style.visibility = 'visible';
-  A.style.transform = 'none';
-  A.style.filter = 'none';
-  B.style.visibility = 'hidden';
-  stage.classList.toggle('at-intro', index === 0);
-  thero.style.opacity = 0;
-  $('veil').style.opacity = index === 0 ? 1 : 0;
-  document.querySelector('.shade').style.opacity = 1;
-  card.style.opacity = index === 0 ? 0 : 1;
-  card.style.transform = 'none';
-  rail.style.opacity = index === 0 ? 0 : 1;
-  if (index) {
-    const room = ROOMS[index - 1];
-    $('count').textContent = `${index} of ${ROOMS.length}`;
-    $('name').textContent = room.name;
-    $('line').textContent = room.line;
-    $('facts').replaceChildren(...room.facts.map(fact => {
-      const item = document.createElement('li');
-      item.textContent = fact;
-      return item;
-    }));
-  }
-  railButtons.forEach((button, i) => button.classList.toggle('on', i + 1 === index));
-  $('progress').style.width = `${index / ROOMS.length * 100}%`;
-  playing = false;
-  prepareAdjacent();
+  busy=false;
 }
-
-async function playTo(index) {
-  if (playing || index < 0 || index > ROOMS.length || index === currentStop) return;
-  if (reduceMotion || Math.abs(index - currentStop) > 1) {
-    showStop(index);
-    return;
-  }
-  playing = true;
-  stage.classList.remove('at-intro');
-  const forward = index > currentStop;
-  const video = forward ? forwardVideos[currentStop] : reverseVideos[index];
-  let finished = false;
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-    showStop(index);
-  };
-  try {
-    await loadVideo(video);
-    video.pause();
-    if (video.currentTime > .02) {
-      video.currentTime = 0;
-      await new Promise(resolve => video.addEventListener('seeked', resolve, {once:true}));
-    }
-    video.onended = finish;
-    activeVideo = video;
-    video.style.opacity = 1;
-    A.style.visibility = 'hidden';
-    B.style.visibility = 'hidden';
-    card.style.opacity = 0;
-    thero.style.opacity = 0;
-    $('veil').style.opacity = 0;
-    document.querySelector('.shade').style.opacity = 0;
-    rail.style.opacity = 0;
-    await video.play();
-    setTimeout(finish, (video.duration || 6.05) * 1000 + 1000);
-  } catch (error) {
-    console.error('Tour playback failed', error);
-    finish();
-  }
+function goTo(index) {
+  if(!tour.getBoundingClientRect().height)return;
+  tour.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+  navigateTo(index);
 }
-
-function tourTop() { return tour.getBoundingClientRect().top + scrollY; }
-function tourIsCentered() {
-  const box = tour.getBoundingClientRect();
-  return box.top < innerHeight * .25 && box.bottom > innerHeight * .75;
-}
-function alignTour() { scrollTo({top:tourTop(), behavior:reduceMotion ? 'instant' : 'smooth'}); }
-function goStop(index) {
-  alignTour();
-  playTo(index);
-}
-
-const railButtons = ROOMS.map((room, i) => {
-  const button = document.createElement('button');
-  button.innerHTML = `<span class="nm">${room.name}</span><span class="dot"></span>`;
-  button.setAttribute('aria-label', `Go to ${room.name}`);
-  button.addEventListener('click', () => goStop(i + 1));
-  rail.appendChild(button);
-  return button;
+const introButton=document.createElement('button');
+introButton.type='button';introButton.innerHTML='<span class="nm">Overview</span><span class="dot"></span>';
+introButton.setAttribute('aria-label','View property overview');
+introButton.addEventListener('click',()=>goTo(0));
+rail.appendChild(introButton); roomButtons.push(introButton);
+ROOMS.forEach((room,i)=>{
+  const button=document.createElement('button');button.type='button';
+  const label=document.createElement('span');label.className='nm';label.textContent=room.name;
+  const dot=document.createElement('span');dot.className='dot';
+  button.append(label,dot);
+  button.setAttribute('aria-label','View '+room.name);
+  button.addEventListener('click',()=>goTo(i+1));
+  rail.appendChild(button);roomButtons.push(button);
 });
-
-function step(direction) {
-  if (!tourIsCentered()) return false;
-  if (playing) return true;
-  const next = currentStop + direction;
-  if (next < 0 || next > ROOMS.length) return false;
-  if (Math.abs(tour.getBoundingClientRect().top) > 3) alignTour();
-  else playTo(next);
-  return true;
-}
-
-addEventListener('wheel', event => {
-  if (!tourIsCentered()) return;
-  const direction = Math.sign(event.deltaY);
-  if (!direction) return;
-  const canCapture = playing || (direction > 0 && currentStop < ROOMS.length) || (direction < 0 && currentStop > 0);
-  if (!canCapture) return;
-  event.preventDefault();
-  const now = performance.now();
-  const freshGesture = now - lastWheelAt > 250;
-  lastWheelAt = now;
-  if (freshGesture && !playing) step(direction);
-}, {passive:false});
-
-addEventListener('touchstart', event => {
-  touchStartY = event.touches[0]?.clientY ?? null;
-}, {passive:true});
-addEventListener('touchmove', event => {
-  if (touchStartY === null || !tourIsCentered()) return;
-  const direction = Math.sign(touchStartY - event.touches[0].clientY);
-  if (playing || (direction > 0 && currentStop < ROOMS.length) || (direction < 0 && currentStop > 0)) event.preventDefault();
-}, {passive:false});
-addEventListener('touchend', event => {
-  if (touchStartY === null) return;
-  const moved = touchStartY - (event.changedTouches[0]?.clientY ?? touchStartY);
-  touchStartY = null;
-  if (Math.abs(moved) > 40) step(Math.sign(moved));
-}, {passive:true});
-addEventListener('keydown', event => {
-  if (!tourIsCentered() || /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-  const direction = ['ArrowDown','PageDown',' '].includes(event.key) ? 1 : ['ArrowUp','PageUp'].includes(event.key) ? -1 : 0;
-  if (direction && step(direction)) event.preventDefault();
-});
-
-addEventListener('scroll', () => $('nav').classList.toggle('solid', scrollY > innerHeight * .6), {passive:true});
-const heroObserver = new IntersectionObserver(([entry]) => {
-  if (reduceMotion || !heroVid.src) return;
-  if (entry.isIntersecting) heroVid.play().catch(() => {});
-  else heroVid.pause();
-}, {threshold:.05});
-heroObserver.observe(tour);
-async function prepareTour() {
-  $('loaderRetry').hidden = true;
-  $('loaderMessage').textContent = 'Downloading the full experience';
-  try {
-    await Promise.all(assetPaths.map(fetchAsset));
-    document.querySelector('.poster').src = loadedAssets.get('assets/hero-poster.jpg');
-    heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
-    heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
-    await Promise.all([loadVideo(forwardVideos[0]), document.fonts.ready]);
-    showStop(0);
-    if (!reduceMotion && document.querySelector('.hero').getBoundingClientRect().bottom > 0) heroVid.play().catch(() => {});
-    loaderBar.style.width = '100%';
-    loaderCount.textContent = `100% · ${assetPaths.length} of ${assetPaths.length} assets`;
-    $('loaderMessage').textContent = 'Your tour is ready';
-    document.body.classList.remove('loading');
-    loader.classList.add('done');
-    setTimeout(() => loader.remove(), 600);
-    const chatWidget = document.createElement('script');
-    chatWidget.src = 'https://widgets.leadconnectorhq.com/loader.js';
-    chatWidget.dataset.resourcesUrl = 'https://widgets.leadconnectorhq.com/chat-widget/loader.js';
-    chatWidget.dataset.widgetId = '6ac7e9f2b17ff091c6e93d95';
-    $('ai-widget-slot').appendChild(chatWidget);
-  } catch (error) {
-    $('loaderMessage').textContent = `Download failed: ${error.message}`;
-    $('loaderRetry').hidden = false;
-  }
-}
-$('loaderRetry').addEventListener('click', prepareTour);
-prepareTour();
+$('startTour').addEventListener('click',()=>goTo(1));
+window.addEventListener('scroll',()=> $('nav').classList.toggle('solid',scrollY>innerHeight*.6),{passive:true});
+displayRoom(0);
+document.body.classList.remove('loading');
+$('loader').remove();
+const chatWidget=document.createElement('script');
+chatWidget.src='https://widgets.leadconnectorhq.com/loader.js';
+chatWidget.dataset.resourcesUrl='https://widgets.leadconnectorhq.com/chat-widget/loader.js';
+chatWidget.dataset.widgetId='6ac7e9f2b17ff091c6e93d95';
+$('ai-widget-slot').appendChild(chatWidget);
