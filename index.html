@@ -60,9 +60,9 @@ img,video{max-width:100%}
 .ctas{display:flex; flex-wrap:wrap; gap:.8rem}
 
 /* tour */
-#tour{position:relative; background:var(--black)}
+#tour{position:relative; background:var(--black); height:100vh; height:100svh}
 .snap{position:absolute; left:0; width:1px; height:1px; scroll-snap-align:start; pointer-events:none}
-.stage{position:sticky; top:env(safe-area-inset-top,0px); height:100vh; height:100svh; overflow:hidden; background:#151a1f}
+.stage{position:relative; height:100vh; height:100svh; overflow:hidden; background:#151a1f}
 .layer{position:absolute; inset:0; will-change:transform, filter, opacity}
 .layer img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block}
 #flyWrap video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0}
@@ -76,7 +76,7 @@ body.loading{overflow:hidden}
 #loaderRetry{border:0;border-radius:99px;background:var(--white);color:var(--black);padding:.7rem 1.2rem}
 .shade{position:absolute; inset:0; pointer-events:none; z-index:4;
   background:linear-gradient(to top, rgba(11,11,11,.68) 0%, rgba(11,11,11,.18) 32%, rgba(11,11,11,0) 52%),
-             linear-gradient(to bottom, rgba(11,11,11,.38) 0%, rgba(11,11,11,0) 18%)}
+             linear-gradient(to bottom, rgba(11,11,11,.38) 0%, rgba(11,11,11,0) 18%); transition:opacity .3s ease}
 .veil{position:absolute; inset:0; z-index:4; background:rgba(11,11,11,.5); pointer-events:none}
 .tag{position:absolute; z-index:6; right:clamp(1.1rem,4vw,3rem); top:calc(78px + env(safe-area-inset-top,0px)); font-size:.75rem; color:var(--soft); border:1px solid rgba(247,247,245,.3); padding:.35rem .65rem; border-radius:99px; background:rgba(11,11,11,.3)}
 .thero{position:absolute; inset:0; z-index:5; display:grid; place-items:center; text-align:center; padding:2rem}
@@ -203,7 +203,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
           <small>Demo listing</small>
           <h2>The Hillside<br>Residence</h2>
           <p>Four bedrooms, a resort backyard and about 3,000 square feet of indoor-outdoor living.</p>
-          <div class="cue">Keep scrolling to fly through<i></i></div>
+          <div class="cue">Scroll to fly to the next room<i></i></div>
         </div>
       </div>
       <div class="card" id="card" aria-live="polite">
@@ -298,243 +298,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   </div>
 </footer>
 
-<script>
-const ROOMS = [{"name": "Arrival", "line": "Olive trees, cypress and a white oak pivot door set the tone from the street.", "facts": ["4 bedrooms", "3.5 baths", "About 3,000 sq ft", "Two-car garage"], "img": "assets/room0.jpg"}, {"name": "Great room", "line": "Glass pocket doors slide away and the living room becomes part of the yard.", "facts": ["10 ft ceilings", "Wide-plank white oak floors", "Linear gas fireplace", "Full-width pocket doors"], "img": "assets/room1.jpg"}, {"name": "Kitchen", "line": "A quartzite waterfall island built for both cooking and company.", "facts": ["Calacatta quartzite island", "48 in. professional range", "Paneled built-in refrigerator", "Seating for three"], "img": "assets/room2.jpg"}, {"name": "Primary suite", "line": "A beamed, vaulted ceiling and a private balcony over the pool.", "facts": ["Vaulted oak-beam ceiling", "Private balcony", "Pool and hillside views", "Sitting area"], "img": "assets/room3.jpg"}, {"name": "Primary bath", "line": "Soak in the stone tub with the garden just beyond the glass.", "facts": ["Freestanding stone tub", "Travertine walk-in shower", "Double floating vanity", "Garden window"], "img": "assets/room4.jpg"}, {"name": "Bedroom two", "line": "A bright guest room with a built-in desk nook and garden views.", "facts": ["Queen-size layout", "Built-in oak desk", "Front garden outlook", "Natural light all day"], "img": "assets/room5.jpg"}, {"name": "Backyard", "line": "Infinity-edge pool, spa spillover, fire lounge and an outdoor kitchen.", "facts": ["Infinity-edge pool", "Raised spa with waterfall", "Sunken fire lounge", "Covered outdoor kitchen"], "img": "assets/room6.jpg"}, {"name": "After dark", "line": "The same yard at blue hour, with the city lights coming on below.", "facts": ["Lit pool and spa", "Landscape uplighting", "City-light views", "Indoor and outdoor living"], "img": "assets/room7.jpg"}];
-const SCROLL_CLIPS = ROOMS.map((_, i) => `assets/scroll/${i}.mp4`);
-const CLIP_DURATION = 145 / 24;
-const STOPS = [{hero:true, img: ROOMS[7].img}].concat(ROOMS);
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const $ = id => document.getElementById(id);
-const tour = $('tour'), A = $('A'), B = $('B'), Aimg = $('Aimg'), Bimg = $('Bimg');
-const card = $('card'), thero = $('thero'), veil = $('veil'), rail = $('rail');
-let VH, HOLD, TRANS, SEG, aIdx = -1, bIdx = -1, cardIdx = -1;
-let displayP = null, lastFrameAt = 0, frameRequest = 0;
-function requestRender() {
-  if (!frameRequest) frameRequest = requestAnimationFrame(now => { frameRequest = 0; render(now); });
-}
-
-// nav goes solid once past the hero
-const nav = $('nav');
-addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > innerHeight * 0.6), {passive: true});
-
-const heroVid = $('heroVid'), filmVid = $('filmVid');
-const assetPaths = ['assets/hero-poster.jpg', 'assets/film-poster.jpg', ...ROOMS.map(r => r.img), 'assets/hero-loop.mp4', 'assets/film.mp4', ...SCROLL_CLIPS];
-const clipVideos = SCROLL_CLIPS.map(() => {
-  const video = document.createElement('video');
-  video.muted = true; video.playsInline = true; video.preload = 'none';
-  $('flyWrap').appendChild(video);
-  return video;
-});
-function primeClips() {
-  clipVideos.forEach(video => {
-    if (video._primed || video.readyState < 2) return;
-    const playback = video.play();
-    if (playback) playback.then(() => { video.pause(); video._primed = true; }).catch(() => {});
-  });
-}
-['pointerdown', 'touchstart', 'keydown'].forEach(event => addEventListener(event, primeClips, {passive:true}));
-const loadedAssets = new Map(), received = new Map(), totals = new Map();
-let tourReady = false;
-const loader = $('loader'), loaderBar = $('loaderBar'), loaderCount = $('loaderCount');
-function updateLoading() {
-  const total = [...totals.values()].reduce((a,b) => a+b, 0);
-  const done = [...received.values()].reduce((a,b) => a+b, 0);
-  const pct = Math.min(99, Math.floor((total ? done/total : loadedAssets.size/assetPaths.length)*100));
-  loaderBar.style.width = pct + '%';
-  loaderCount.textContent = `${pct}% · ${loadedAssets.size} of ${assetPaths.length} assets`;
-}
-async function fetchAsset(path) {
-  if (loadedAssets.has(path)) return loadedAssets.get(path);
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
-  const size = Number(response.headers.get('content-length')) || 0;
-  totals.set(path, size);
-  let blob;
-  if (response.body && size) {
-    const reader = response.body.getReader(), chunks = [];
-    let count = 0;
-    while (true) {
-      const {done, value} = await reader.read();
-      if (done) break;
-      chunks.push(value); count += value.byteLength;
-      received.set(path, count); updateLoading();
-    }
-    blob = new Blob(chunks, {type: response.headers.get('content-type') || 'application/octet-stream'});
-  } else {
-    blob = await response.blob(); received.set(path, blob.size); totals.set(path, blob.size);
-  }
-  const url = URL.createObjectURL(blob);
-  if (!path.endsWith('.mp4')) {
-    const image = new Image(); image.src = url; await image.decode();
-  }
-  loadedAssets.set(path, url); updateLoading();
-  return url;
-}
-async function prepareTour() {
-  $('loaderRetry').hidden = true;
-  $('loaderMessage').textContent = 'Downloading the full experience';
-  try {
-    await Promise.all(assetPaths.map(fetchAsset));
-    document.querySelector('.poster').src = loadedAssets.get('assets/hero-poster.jpg');
-    filmVid.poster = loadedAssets.get('assets/film-poster.jpg');
-    filmVid.src = loadedAssets.get('assets/film.mp4');
-    heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
-    heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
-    await Promise.all(clipVideos.map((video, i) => new Promise((resolve, reject) => {
-      video.src = loadedAssets.get(SCROLL_CLIPS[i]);
-      video.load();
-      if (video.readyState >= 2) return resolve();
-      video.addEventListener('loadeddata', resolve, {once:true});
-      video.addEventListener('error', () => reject(new Error(`Tour clip ${i + 1} could not decode`)), {once:true});
-    })));
-    primeClips();
-    await document.fonts.ready;
-    tourReady = true;
-    if (!reduce) heroVid.play().catch(() => {});
-    loaderBar.style.width = '100%';
-    loaderCount.textContent = `100% · ${assetPaths.length} of ${assetPaths.length} assets`;
-    $('loaderMessage').textContent = 'Your tour is ready';
-    document.body.classList.remove('loading');
-    loader.classList.add('done');
-    setTimeout(() => loader.remove(), 600);
-    render();
-  } catch (error) {
-    $('loaderMessage').textContent = `Download failed: ${error.message}`;
-    $('loaderRetry').hidden = false;
-  }
-}
-$('loaderRetry').addEventListener('click', prepareTour);
-prepareTour();
-
-const railBtns = ROOMS.map((r, i) => {
-  const b = document.createElement('button');
-  b.innerHTML = `<span class="nm">${r.name}</span><span class="dot"></span>`;
-  b.setAttribute('aria-label', `Go to ${r.name}`);
-  b.onclick = () => goStop(i + 1);
-  rail.appendChild(b);
-  return b;
-});
-
-function tourTop() { return tour.getBoundingClientRect().top + scrollY; }
-
-function layout() {
-  VH = innerHeight; HOLD = VH * 0.9; TRANS = VH * (matchMedia('(pointer: fine)').matches ? 5.2 : 3.6); SEG = HOLD + TRANS;
-  tour.style.height = ((STOPS.length - 1) * SEG + HOLD + VH * 1.1) + 'px';
-  tour.querySelectorAll('.snap').forEach(n => n.remove());
-  STOPS.forEach((s, k) => {
-    const m = document.createElement('div');
-    m.className = 'snap'; m.style.top = (k * SEG + HOLD * 0.5) + 'px';
-    tour.appendChild(m);
-  });
-  requestRender();
-}
-function goStop(k) { scrollTo({top: tourTop() + k * SEG + HOLD * 0.5, behavior: reduce ? 'auto' : 'smooth'}); }
-
-const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
-const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-function setImg(el, idx, w) {
-  if (w === 'A' ? aIdx === idx : bIdx === idx) return;
-  el.src = loadedAssets.get(STOPS[idx].img) || STOPS[idx].img; if (w === 'A') aIdx = idx; else bIdx = idx;
-}
-function fillCard(k) {
-  if (cardIdx === k) return; cardIdx = k; if (k === 0) return;
-  const r = ROOMS[k - 1];
-  $('count').textContent = `${k} of ${ROOMS.length}`;
-  $('name').textContent = r.name; $('line').textContent = r.line;
-  $('facts').innerHTML = r.facts.map(f => `<li>${f}</li>`).join('');
-}
-
-// Short GOP clips let the browser seek to any 1080p frame without decoding seconds of video.
-let targetTime = 0, activeSegment = -1;
-function seekTour(k, raw) {
-  if (!tourReady || reduce) return;
-  if (activeSegment !== k && activeSegment >= 0) clipVideos[activeSegment].style.opacity = 0;
-  activeSegment = k;
-  const video = clipVideos[k];
-  targetTime = Math.min(CLIP_DURATION - 0.05, raw * CLIP_DURATION);
-  const frame = Math.round(targetTime * 24) / 24;
-  if (!video.seeking && Math.abs(video.currentTime - frame) > 1 / 48) video.currentTime = frame;
-  video.style.opacity = 1;
-  A.style.visibility = B.style.visibility = 'hidden';
-}
-clipVideos.forEach((video, k) => video.addEventListener('seeked', () => {
-  if (activeSegment !== k) return;
-  const frame = Math.round(targetTime * 24) / 24;
-  if (Math.abs(video.currentTime - frame) > 1 / 48) video.currentTime = frame;
-}));
-
-function render(now = performance.now()) {
-  const top = tourTop();
-  const targetP = clamp(scrollY - top, 0, (STOPS.length - 1) * SEG + HOLD);
-  if (displayP === null || reduce) displayP = targetP;
-  else {
-    const elapsed = Math.min(64, Math.max(0, now - lastFrameAt));
-    displayP += (targetP - displayP) * (1 - Math.exp(-elapsed / 85));
-    if (Math.abs(targetP - displayP) < .5) displayP = targetP;
-    else requestRender();
-  }
-  lastFrameAt = now;
-  const p = displayP;
-  const k = Math.min(STOPS.length - 1, Math.floor(p / SEG));
-  const local = p - k * SEG;
-  const inTrans = local > HOLD && k < STOPS.length - 1;
-  const raw = inTrans ? (local - HOLD) / TRANS : 0;
-  const t = ease(raw);
-
-  setImg(Aimg, k, 'A');
-  if (reduce) {
-    A.style.transform = 'none';
-    if (inTrans) { setImg(Bimg, k + 1, 'B'); B.style.opacity = t; B.style.transform = 'none'; } else B.style.opacity = 0;
-  } else {
-    A.style.transform = 'none';
-    A.style.filter = 'none';
-    if (inTrans) {
-      setImg(Bimg, k + 1, 'B');
-      B.style.opacity = tourReady ? 0 : t;
-      B.style.transform = 'none';
-      B.style.filter = 'none';
-    } else B.style.opacity = 0;
-  }
-  if (inTrans && tourReady && !reduce) seekTour(k, raw);
-  else {
-    if (activeSegment >= 0) clipVideos[activeSegment].style.opacity = 0;
-    activeSegment = -1;
-    A.style.visibility = B.style.visibility = 'visible';
-  }
-
-  const heroOp = k === 0 ? 1 - clamp(raw / 0.3) : 0;
-  thero.style.opacity = heroOp;
-  thero.style.transform = `translateY(${-40 * (1 - heroOp)}px)`;
-  veil.style.opacity = k === 0 ? 1 - t : 0;
-  rail.style.opacity = k === 0 && !inTrans ? 0 : 1;
-
-  let shown, op;
-  if (!inTrans) { shown = k; op = 1; }
-  else if (raw < 0.5) { shown = k; op = 1 - clamp(raw / 0.1); }
-  else { shown = k + 1; op = clamp((raw - 0.9) / 0.1); }
-  if (shown === 0) op = 0;
-  fillCard(shown);
-  card.style.opacity = op;
-  card.style.transform = `translateY(${(1 - op) * 24}px)`;
-
-  const active = inTrans && raw >= 0.85 ? k + 1 : k;
-  railBtns.forEach((b, i) => b.classList.toggle('on', i + 1 === active));
-  $('progress').style.width = (p / ((STOPS.length - 1) * SEG + HOLD) * 100) + '%';
-}
-
-addEventListener('scroll', requestRender, {passive: true});
-addEventListener('resize', layout);
-Aimg.onload = Bimg.onload = requestRender;
-const bookingForm = $('bookingForm');
-bookingForm.elements.date.min = new Date().toLocaleDateString('en-CA', {timeZone:'America/Los_Angeles'});
-bookingForm.addEventListener('submit', event => {
-  event.preventDefault();
-  const data = new FormData(bookingForm);
-  const subject = encodeURIComponent('Real estate flythrough demo request');
-  const body = encodeURIComponent(`Hello BMON,\n\nI'd like to request a demo call.\n\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPreferred date: ${data.get('date')}\nPreferred time: ${data.get('time')} Pacific\n\nPlease confirm availability.\n`);
-  location.href = `mailto:support@bmon.ai?subject=${subject}&body=${body}`;
-});
-layout();
-</script>
+<script src="rooms.js"></script>
+<script src="tour.js"></script>
 </body>
 </html>

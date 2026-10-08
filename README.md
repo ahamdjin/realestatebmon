@@ -1,8 +1,8 @@
 # RealEstateBMON
 
-A scroll controlled, 1080p real estate tour. The page downloads and decodes its images and video before opening the experience. The eight scroll clips preserve the supplied video's 24 fps frames and add frequent keyframes so browser seeking responds quickly.
+A scroll triggered, 1080p real estate tour. The page downloads its images and media before opening. A scroll gesture plays a complete transition at normal speed, then holds on the next room. Reverse clips play when scrolling back.
 
-The tour eases visual progress between wheel updates. Desktop transitions use a longer scroll distance to show more of the source frames. The booking form requests a preferred date and Pacific time by email; it does not show live availability or confirm a reservation.
+The booking form requests a preferred date and Pacific time by email; it does not show live availability or confirm a reservation.
 
 ## Local preview
 
