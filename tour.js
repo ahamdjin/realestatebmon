@@ -48,7 +48,62 @@ function displayRoom(index) {
   $('progress').style.width=(index/ROOMS.length*100)+'%';
   preloadNear(index);
 }
-function playClip(path) {
+// A frame sequence is preferred over the legacy MP4 when frames/manifest.json exists.
+// Render frames at source fidelity; timestamps determine playback, not network timing.
+let frameManifestPromise = null;
+function frameManifest(){
+  if (!frameManifestPromise) frameManifestPromise = fetch('assets/frames/manifest.json')
+    .then(r=>r.ok?r.json():null).catch(()=>null);
+  return frameManifestPromise;
+}
+function frameUrl(segment,number){
+  return 'assets/frames/scroll/'+segment+'/'+String(number).padStart(4,'0')+'.webp';
+}
+async function playFrameSequence(segment,reverse=false){
+  const manifest=await frameManifest();
+  const entry=manifest?.scroll?.[segment];
+  if(!entry || !entry.count) return false;
+  const fps=entry.fps||100, count=entry.count;
+  const canvas=document.createElement('canvas');
+  canvas.width=entry.width||1280;canvas.height=entry.height||720;
+  canvas.className='tour-frames';
+  const ctx=canvas.getContext('2d',{alpha:false});
+  if(!ctx)return false;
+  const frames=new Array(count);
+  // Preload the selected movement before hiding the underlying room.
+  try{
+    await Promise.all(Array.from({length:count},(_,i)=>new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>{frames[i]=img;resolve()};
+      img.onerror=reject;
+      img.src=frameUrl(segment,i+1);
+    })));
+  }catch(err){
+    console.warn('Frame load failed; falling back to video',err);
+    return false;
+  }
+  $('flyWrap').appendChild(canvas);
+  stage.classList.add('is-playing');
+  stage.classList.remove('at-intro');
+  A.style.visibility='hidden';
+  card.style.opacity='0';
+  let start=null;
+  await new Promise(resolve=>{
+    function draw(time){
+      if(start===null)start=time;
+      const elapsed=(time-start)/1000;
+      const idx=Math.min(count-1,Math.floor(elapsed*fps));
+      const image=frames[reverse?count-1-idx:idx];
+      if(image)ctx.drawImage(image,0,0,canvas.width,canvas.height);
+      if(idx<count-1)requestAnimationFrame(draw);
+      else resolve();
+    }
+    requestAnimationFrame(draw);
+  });
+  canvas.remove();
+  return true;
+}
+function playVideoFallback(path){
   return new Promise(resolve=>{
     const v=transitionVideo(path);
     activeVideo=v;
@@ -56,8 +111,10 @@ function playClip(path) {
     const finish=()=>{
       if(finished)return;
       finished=true;
+      clearTimeout(watchdog);
       v.pause();v.remove();if(activeVideo===v)activeVideo=null;resolve();
     };
+    const watchdog=setTimeout(finish,15000);
     v.addEventListener('ended',finish,{once:true});
     v.addEventListener('error',finish,{once:true});
     v.addEventListener('loadeddata',()=>{
@@ -69,10 +126,13 @@ function playClip(path) {
       document.querySelector('.shade').style.opacity='0';
       v.play().catch(finish);
     },{once:true});
-    // Never trap the visitor behind a clip that stalls.
-    setTimeout(finish,15000);
   });
 }
+async function playClip(path,segment,reverse){
+  if(await playFrameSequence(segment,reverse))return;
+  await playVideoFallback(path);
+}
+
 async function navigateTo(index) {
   nextTarget=Math.max(0,Math.min(ROOMS.length,index));
   if(busy)return;
@@ -83,7 +143,7 @@ async function navigateTo(index) {
     if(reduceMotion){displayRoom(following);continue;}
     // Step through every intervening room to preserve spatial continuity.
     const path=direction>0 ? paths[currentStop] : reversePaths[following];
-    await playClip(path);
+    await playClip(path, direction>0 ? currentStop : following, direction<0);
     displayRoom(following);
   }
   busy=false;
