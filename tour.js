@@ -251,6 +251,7 @@ async function prepareTour() {
     document.querySelector('.poster').src = loadedAssets.get('assets/hero-poster.jpg');
     heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
     heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
+    heroVid.playbackRate = 1.5;
     filmVid.poster = loadedAssets.get('assets/film-poster.jpg');
     filmVid.src = loadedAssets.get('assets/film.mp4');
     await Promise.all([loadVideo(forwardVideos[0]), document.fonts.ready]);

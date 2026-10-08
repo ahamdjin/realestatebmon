@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>bmon.ai real estate | Scroll-through flythrough tours for listings</title>
+<title>Hillside Residence tour | bmon.ai real estate</title>
 <meta name="description" content="AI flythrough tours for Los Angeles listings: a scroll-driven web tour, a full film and social cuts, built from your listing photos, with AB 723 disclosure built in.">
 <meta property="og:title" content="Scroll through the house before the showing">
 <meta property="og:description" content="AI flythrough listing tours by bmon.ai">
@@ -34,9 +34,10 @@ img,video{max-width:100%}
 .wrap{max-width:1240px; margin:0 auto; padding:0 clamp(1.1rem,4vw,3rem)}
 
 /* nav */
-.nav{position:fixed; z-index:50; left:0; right:0; top:0; padding:env(safe-area-inset-top,0px) 0 0; transition:background .4s, backdrop-filter .4s}
+.demo-notice{position:fixed;z-index:60;top:0;left:0;right:0;min-height:34px;padding:calc(.5rem + env(safe-area-inset-top,0px)) clamp(1.1rem,4vw,3rem) .5rem;background:#171715;color:#ddd;font-size:.72rem;line-height:1.2;letter-spacing:.02em;text-align:center}
+.nav{position:fixed; z-index:50; left:0; right:0; top:calc(34px + env(safe-area-inset-top,0px)); padding:0; transition:background .4s, backdrop-filter .4s}
 .nav.solid{background:rgba(11,11,11,.9); backdrop-filter:blur(14px)}
-.nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px}
+.nav .wrap{display:flex; align-items:center; justify-content:space-between; height:76px}
 .mark{font-weight:600; font-size:1.35rem; letter-spacing:-.03em; text-decoration:none; display:flex; align-items:baseline; gap:.55rem}
 .mark span{font-weight:400; font-size:.85rem; letter-spacing:0; color:var(--grey)}
 .nav nav{display:flex; align-items:center; gap:1.6rem; font-size:.95rem}
@@ -50,13 +51,18 @@ img,video{max-width:100%}
 .nav .btn{padding:.6rem 1.1rem; color:var(--black)}
 
 /* hero */
-.hero{position:relative; height:100vh; height:100svh; min-height:600px; overflow:hidden; display:flex; align-items:flex-end; scroll-snap-align:start}
+.hero{position:relative; height:100vh; height:100svh; min-height:600px; overflow:hidden; display:grid; place-items:center; scroll-snap-align:start}
 .hero video,.hero .poster{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
-.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(11,11,11,.92) 0%, rgba(11,11,11,.45) 45%, rgba(11,11,11,.25) 100%)}
-.hero .wrap{position:relative; z-index:2; width:100%; padding-bottom:clamp(2.5rem,8vh,5.5rem)}
-.eyebrow{font-size:.9rem; color:var(--pool); font-weight:500; margin:0 0 1rem}
-.hero h1{font-weight:500; font-size:clamp(2.7rem,7.4vw,6.4rem); line-height:.95; letter-spacing:-.04em; margin:0; max-width:14ch}
-.hero p.sub{font-size:clamp(1.05rem,1.6vw,1.3rem); line-height:1.5; color:var(--soft); max-width:36rem; margin:1.4rem 0 2rem}
+.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(11,11,11,.52),rgba(11,11,11,.08) 32%,rgba(11,11,11,.42) 60%,rgba(11,11,11,.5))}
+.hero .wrap{position:relative; z-index:2; width:100%; text-align:center; padding-top:clamp(5rem,12vh,9rem)}
+.eyebrow{font-size:.78rem; color:var(--white); font-weight:500; margin:0 0 1.3rem;letter-spacing:.24em;text-transform:uppercase}
+.hero h1{font-family:var(--listing);font-weight:400;font-size:clamp(3.5rem,7.8vw,8.2rem);line-height:.94;letter-spacing:-.04em;margin:0 auto;max-width:15ch;text-wrap:balance}
+.hero p.sub{font-size:clamp(1rem,1.3vw,1.15rem);line-height:1.5;color:var(--white);max-width:35rem;margin:1.4rem auto 1.8rem}
+.hero .ctas{justify-content:center}
+.hero-scroll{position:absolute;z-index:3;right:clamp(1.1rem,4vw,3rem);bottom:clamp(2rem,5vw,3.5rem);font-size:.75rem;letter-spacing:.22em;text-decoration:none;text-transform:uppercase}
+.hero-scroll span{display:inline-block;margin-left:.45rem;font-size:1.2rem;transition:transform .2s}
+.hero-scroll:hover span{transform:translateY(5px)}
+.hero-disclosure{position:absolute;z-index:3;left:clamp(1.1rem,4vw,3rem);bottom:clamp(2rem,5vw,3.5rem);font-size:.72rem;color:var(--soft)}
 .ctas{display:flex; flex-wrap:wrap; gap:.8rem}
 
 /* tour */
@@ -103,6 +109,14 @@ body.loading{overflow:hidden}
 
 /* content sections */
 section.block{padding:clamp(5rem,11vw,9rem) 0; scroll-snap-align:start}
+.listing-intro{padding:clamp(5rem,10vw,8rem) 0}
+.listing-intro-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(2rem,6vw,6rem);align-items:end}
+.listing-intro h2{font-family:var(--listing);font-weight:400;font-size:clamp(3.2rem,6vw,6.2rem);line-height:.98;letter-spacing:-.035em;margin:0;max-width:12ch}
+.listing-intro .lede{margin:0 0 .3rem}
+.listing-facts{display:flex;flex-wrap:wrap;gap:1.5rem clamp(2rem,5vw,5rem);padding:2rem 0 0;margin:clamp(2.5rem,5vw,4rem) 0 0;border-top:1px solid var(--line-l);list-style:none}
+.listing-facts li{display:grid;gap:.35rem}
+.listing-facts strong{font-size:clamp(1.35rem,2.6vw,2rem);font-weight:500;letter-spacing:-.03em}
+.listing-facts span{color:#55554F;font-size:.82rem}
 .light{background:var(--white); color:var(--black)}
 .light .muted{color:#55554F}
 .muted{color:var(--grey)}
@@ -149,11 +163,21 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   .grid3{grid-template-columns:1fr}
   .steps li{grid-template-columns:3.2rem minmax(0,1fr); }
   .steps li p{grid-column:2}
-  .law{grid-template-columns:1fr}
+  .law,.listing-intro-head{grid-template-columns:1fr}
   .booking-intro{display:block}
   .calendar-embed,.calendar-embed iframe{min-height:980px}
   .rail{display:none}
   .facts li{font-size:.8rem}
+  .hero .wrap{padding-top:5rem}
+  .hero-disclosure{max-width:15rem}
+}
+@media (max-width:600px){
+  .demo-notice{font-size:.62rem}
+  .nav .wrap{height:66px}
+  .hero h1{font-size:clamp(3.2rem,12vw,5rem)}
+  .hero p.sub{max-width:25rem}
+  .hero-disclosure{font-size:.62rem}
+  .hero-scroll{font-size:.66rem}
 }
 @media (prefers-reduced-motion: reduce){ .cue i{animation:none} }
 </style>
@@ -161,12 +185,13 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
 <body class="loading">
 <div id="loader" role="status" aria-live="polite"><div class="loader-inner"><span class="mark">bmon.ai <span>real estate</span></span><h2>Preparing your<br>private tour.</h2><p id="loaderMessage">Downloading the full experience</p><div class="loader-track"><span id="loaderBar"></span></div><p class="loader-count" id="loaderCount">0%</p><button id="loaderRetry" type="button" hidden>Retry download</button></div></div>
 
+<div class="demo-notice">Demo property · AI-generated images and video · Not a real listing</div>
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="mark" href="#top">bmon.ai<span>real estate</span></a>
     <nav aria-label="Main">
-      <a href="#demo">Demo</a>
-      <a href="#included">What you get</a>
+      <a href="#home">The home</a>
+      <a href="#demo">Rooms</a>
       <a href="#how">How it works</a>
       <a class="btn" href="#book">Book a demo</a>
     </nav>
@@ -178,13 +203,30 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
   <img class="poster" src="assets/hero-poster.jpg" alt="">
   <video id="heroVid" muted playsinline loop preload="none" poster="assets/hero-poster.jpg"></video>
   <div class="wrap">
-    <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
-    <h1 id="h1">Scroll through the house before the showing.</h1>
-    <p class="sub">We turn your listing photos into a flythrough buyers control with their thumb: a scroll-driven web tour, a full film and social cuts, with disclosure built in.</p>
+    <p class="eyebrow">Hillside Residence · Los Angeles</p>
+    <h1 id="h1">A home worth stepping into.</h1>
+    <p class="sub">Take a guided look through the rooms. Scroll to move from one space to the next.</p>
     <div class="ctas">
-      <a class="btn" href="#book">Book a demo</a>
-      <a class="btn ghost" href="#demo">Scroll the demo</a>
+      <a class="btn" href="#demo">Start the guided tour</a>
     </div>
+  </div>
+  <span class="hero-disclosure">AI-generated concept property</span>
+  <a class="hero-scroll" href="#home">Explore the home <span aria-hidden="true">↓</span></a>
+</section>
+
+<section class="listing-intro light" id="home" aria-labelledby="home-title">
+  <div class="wrap">
+    <p class="kicker">The home · Demo listing</p>
+    <div class="listing-intro-head">
+      <h2 id="home-title">From first arrival to after dark.</h2>
+      <p class="lede muted">Explore eight spaces in a single guided visit. The Hillside Residence is an AI-generated concept that shows how a real listing can become a more vivid tour.</p>
+    </div>
+    <ul class="listing-facts">
+      <li><strong>08</strong><span>Spaces to explore</span></li>
+      <li><strong>4</strong><span>Bedrooms</span></li>
+      <li><strong>3.5</strong><span>Bathrooms</span></li>
+      <li><strong>~3,000</strong><span>Square feet · concept</span></li>
+    </ul>
   </div>
 </section>
 
@@ -202,7 +244,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
           <small>Demo listing</small>
           <h2>The Hillside<br>Residence</h2>
           <p>Four bedrooms, a resort backyard and about 3,000 square feet of indoor-outdoor living.</p>
-          <div class="cue">Scroll to fly to the next room<i></i></div>
+          <div class="cue">Scroll to move through the rooms<i></i></div>
         </div>
       </div>
       <div class="card" id="card" aria-live="polite">
