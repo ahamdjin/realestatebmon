@@ -59,6 +59,12 @@ img,video{max-width:100%}
 .hero p.sub{font-size:clamp(1.05rem,1.6vw,1.3rem); line-height:1.5; color:var(--soft); max-width:36rem; margin:1.4rem 0 2rem}
 .ctas{display:flex; flex-wrap:wrap; gap:.8rem}
 
+/* Unified hero + room tour */
+#stage .hero{position:absolute;inset:0;height:100%;min-height:0;z-index:7;transition:opacity .3s ease,visibility .3s ease;pointer-events:none}
+#stage .hero .wrap{pointer-events:auto}
+#stage:not(.at-intro) .hero{opacity:0;visibility:hidden}
+#stage .hero video,#stage .hero .poster{width:100%;height:100%;object-fit:cover}
+#stage .hero .wrap{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}
 /* tour */
 #tour{position:relative; background:var(--black); height:100vh; height:100svh}
 .snap{position:absolute; left:0; width:1px; height:1px; scroll-snap-align:start; pointer-events:none}
@@ -174,7 +180,12 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
 </header>
 
 <main id="top">
-<section class="hero" aria-labelledby="h1">
+
+
+<section id="demo" aria-label="Demo listing tour">
+  <div id="tour">
+    <div class="stage" id="stage">
+<div class="hero" aria-labelledby="h1">
   <img class="poster" src="assets/hero-poster.jpg" alt="">
   <video id="heroVid" muted playsinline loop preload="none" poster="assets/hero-poster.jpg"></video>
   <div class="wrap">
@@ -186,11 +197,7 @@ footer p{margin:0; max-width:44rem; line-height:1.6}
       <a class="btn ghost" href="#demo">Scroll the demo</a>
     </div>
   </div>
-</section>
-
-<section id="demo" aria-label="Demo listing tour">
-  <div id="tour">
-    <div class="stage" id="stage">
+</div>
       <div class="layer" id="A"><img alt="" id="Aimg"></div>
       <div class="layer" id="B"><img alt="" id="Bimg"></div>
       <div id="flyWrap" aria-hidden="true"></div>
