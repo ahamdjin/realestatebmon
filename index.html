@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>bmon.ai real estate | Scroll-through flythrough tours for listings</title>
+<meta name="description" content="AI flythrough tours for Los Angeles listings: a scroll-driven web tour, a full film and social cuts, built from your listing photos, with AB 723 disclosure built in.">
+<meta property="og:title" content="Scroll through the house before the showing">
+<meta property="og:description" content="AI flythrough listing tours by bmon.ai">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Italiana&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0B0B0B; --white:#F7F7F5; --grey:#9A9A96; --line-d:rgba(247,247,245,.14); --line-l:rgba(11,11,11,.12);
+  --pool:#3FB8B4; --soft:#D9DEE2;
+  --bg:var(--black); --fg:var(--white);
+  --ui:'Familjen Grotesk','Helvetica Neue',Arial,system-ui,sans-serif;
+  --listing:'Italiana','Didot','Bodoni 72',Georgia,serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:var(--black); --fg:var(--white);} }
+:root[data-theme="dark"]{ --bg:var(--black); --fg:var(--white);}
+:root[data-theme="light"]{ --bg:var(--black); --fg:var(--white);}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px); background:var(--black)}
+body{margin:0; background:var(--bg); color:var(--fg); font-family:var(--ui); -webkit-font-smoothing:antialiased; font-size:17px}
+a{color:inherit}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:2px solid var(--pool); outline-offset:3px}
+img,video{max-width:100%}
+.wrap{max-width:1240px; margin:0 auto; padding:0 clamp(1.1rem,4vw,3rem)}
+
+/* nav */
+.nav{position:fixed; z-index:50; left:0; right:0; top:0; padding:env(safe-area-inset-top,0px) 0 0; transition:background .4s, backdrop-filter .4s}
+.nav.solid{background:rgba(11,11,11,.9); backdrop-filter:blur(14px)}
+.nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px}
+.mark{font-weight:600; font-size:1.35rem; letter-spacing:-.03em; text-decoration:none; display:flex; align-items:baseline; gap:.55rem}
+.mark span{font-weight:400; font-size:.85rem; letter-spacing:0; color:var(--grey)}
+.nav nav{display:flex; align-items:center; gap:1.6rem; font-size:.95rem}
+.nav nav a{text-decoration:none; color:var(--soft)}
+.nav nav a:hover{color:var(--white)}
+.btn{display:inline-flex; align-items:center; gap:.5rem; background:var(--white); color:var(--black); border:none; border-radius:99px; padding:.8rem 1.35rem; font-weight:500; text-decoration:none; font-size:.98rem; white-space:nowrap}
+.btn:hover{background:#fff}
+.btn.ghost{background:none; color:var(--white); border:1px solid rgba(247,247,245,.4)}
+.btn.ghost:hover{border-color:var(--white)}
+.btn.dark{background:var(--black); color:var(--white)}
+.nav .btn{padding:.6rem 1.1rem; color:var(--black)}
+
+/* hero */
+.hero{position:relative; height:100vh; height:100svh; min-height:600px; overflow:hidden; display:flex; align-items:flex-end; scroll-snap-align:start}
+.hero video,.hero .poster{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(11,11,11,.92) 0%, rgba(11,11,11,.45) 45%, rgba(11,11,11,.25) 100%)}
+.hero .wrap{position:relative; z-index:2; width:100%; padding-bottom:clamp(2.5rem,8vh,5.5rem)}
+.eyebrow{font-size:.9rem; color:var(--pool); font-weight:500; margin:0 0 1rem}
+.hero h1{font-weight:500; font-size:clamp(2.7rem,7.4vw,6.4rem); line-height:.95; letter-spacing:-.04em; margin:0; max-width:14ch}
+.hero p.sub{font-size:clamp(1.05rem,1.6vw,1.3rem); line-height:1.5; color:var(--soft); max-width:36rem; margin:1.4rem 0 2rem}
+.ctas{display:flex; flex-wrap:wrap; gap:.8rem}
+
+/* tour */
+#tour{position:relative; background:var(--black)}
+.snap{position:absolute; left:0; width:1px; height:1px; scroll-snap-align:start; pointer-events:none}
+.stage{position:sticky; top:env(safe-area-inset-top,0px); height:100vh; height:100svh; overflow:hidden; background:#151a1f}
+.layer{position:absolute; inset:0; will-change:transform, filter, opacity}
+.layer img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block}
+#flyWrap video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0}
+#loader{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#0b0b0b;color:#f7f7f5;padding:2rem;transition:opacity .5s ease}
+#loader.done{opacity:0;pointer-events:none}
+body.loading{overflow:hidden}
+.loader-inner{width:min(100%,540px)}
+.loader-inner h2{font-family:var(--listing);font-size:clamp(3.5rem,9vw,6rem);font-weight:400;line-height:.95;margin:3rem 0 1.8rem}
+.loader-track{height:2px;background:#555;overflow:hidden}.loader-track span{display:block;height:100%;width:0;background:var(--pool);transition:width .2s}
+.loader-count{font-size:.85rem;color:var(--grey);font-variant-numeric:tabular-nums}
+#loaderRetry{border:0;border-radius:99px;background:var(--white);color:var(--black);padding:.7rem 1.2rem}
+.shade{position:absolute; inset:0; pointer-events:none; z-index:4;
+  background:linear-gradient(to top, rgba(11,11,11,.85) 0%, rgba(11,11,11,.3) 32%, rgba(11,11,11,0) 52%),
+             linear-gradient(to bottom, rgba(11,11,11,.55) 0%, rgba(11,11,11,0) 18%)}
+.veil{position:absolute; inset:0; z-index:4; background:rgba(11,11,11,.5); pointer-events:none}
+.tag{position:absolute; z-index:6; right:clamp(1.1rem,4vw,3rem); top:calc(78px + env(safe-area-inset-top,0px)); font-size:.75rem; color:var(--soft); border:1px solid rgba(247,247,245,.3); padding:.35rem .65rem; border-radius:99px; background:rgba(11,11,11,.3)}
+.thero{position:absolute; inset:0; z-index:5; display:grid; place-items:center; text-align:center; padding:2rem}
+.thero small{display:block; font-size:.9rem; color:var(--pool); font-weight:500; margin-bottom:1.1rem}
+.thero h2{font-family:var(--listing); font-weight:400; font-size:clamp(3.2rem,10vw,8.6rem); line-height:.88; margin:0}
+.thero p{color:var(--soft); font-size:clamp(1rem,1.6vw,1.15rem); margin:1.2rem auto 0; max-width:30rem; line-height:1.5}
+.cue{margin-top:2.2rem; display:inline-flex; flex-direction:column; align-items:center; gap:.6rem; font-size:.9rem; color:var(--soft)}
+.cue i{display:block; width:1px; height:44px; background:linear-gradient(var(--white),transparent); animation:drip 1.8s ease-in-out infinite; transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.card{position:absolute; z-index:5; left:clamp(1.1rem,4vw,3rem); bottom:clamp(1.5rem,5vh,3.5rem); width:min(40rem,calc(100% - 2.2rem))}
+.count{font-size:.88rem; color:var(--pool); font-weight:500; margin:0 0 .35rem}
+.card h3{font-family:var(--listing); font-weight:400; font-size:clamp(3rem,8.5vw,7rem); line-height:.92; margin:0}
+.card p.line{font-size:clamp(1rem,1.5vw,1.15rem); line-height:1.5; color:var(--soft); margin:.9rem 0 0; max-width:32rem}
+.facts{display:flex; flex-wrap:wrap; gap:.5rem; list-style:none; padding:0; margin:1.2rem 0 0}
+.facts li{font-size:.86rem; padding:.45rem .8rem; border:1px solid rgba(247,247,245,.3); border-radius:99px; background:rgba(11,11,11,.3); backdrop-filter:blur(6px)}
+.rail{position:absolute; z-index:6; right:clamp(1rem,3vw,2.5rem); top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:.2rem; transition:opacity .5s}
+.rail button{display:flex; align-items:center; justify-content:flex-end; gap:.7rem; background:none; border:none; padding:.4rem 0; font-size:.85rem; color:var(--grey)}
+.rail .dot{width:22px; height:2px; background:currentColor; transition:width .4s, background .4s}
+.rail .nm{opacity:0; transform:translateX(6px); transition:.3s}
+.rail:hover .nm,.rail button.on .nm,.rail button:focus-visible .nm{opacity:1; transform:none}
+.rail button.on{color:var(--white)}
+.rail button.on .dot{width:40px; background:var(--pool)}
+.progress{position:absolute; z-index:6; left:0; bottom:0; height:3px; background:var(--pool); width:0}
+
+/* content sections */
+section.block{padding:clamp(5rem,11vw,9rem) 0; scroll-snap-align:start}
+.light{background:var(--white); color:var(--black)}
+.light .muted{color:#55554F}
+.muted{color:var(--grey)}
+.kicker{font-size:.9rem; font-weight:500; color:var(--pool); margin:0 0 1rem}
+.light .kicker{color:#1E8784}
+h2.big{font-weight:500; font-size:clamp(2.2rem,5.4vw,4.4rem); line-height:1; letter-spacing:-.035em; margin:0; max-width:18ch}
+.lede{font-size:clamp(1.05rem,1.5vw,1.25rem); line-height:1.55; max-width:40rem; margin:1.3rem 0 0}
+.grid3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1.2rem,2.5vw,2rem); margin-top:clamp(2.5rem,6vw,4.5rem)}
+.item{border-top:1px solid var(--line-l); padding-top:1.4rem}
+.item .no{font-size:.9rem; font-weight:500; color:#1E8784}
+.item h3{font-size:1.45rem; font-weight:500; letter-spacing:-.02em; margin:.6rem 0 .6rem}
+.item p{margin:0; line-height:1.55}
+.steps{list-style:none; padding:0; margin:clamp(2.5rem,6vw,4.5rem) 0 0; display:grid; gap:0}
+.steps li{display:grid; grid-template-columns:5rem minmax(0,1fr) minmax(0,1.3fr); gap:1.5rem; padding:1.8rem 0; border-top:1px solid var(--line-d); align-items:baseline}
+.steps li:last-child{border-bottom:1px solid var(--line-d)}
+.steps .n{font-size:2.6rem; font-weight:500; letter-spacing:-.04em; color:var(--pool); line-height:1}
+.steps h3{font-size:1.5rem; font-weight:500; letter-spacing:-.02em; margin:0}
+.steps p{margin:0; line-height:1.55; color:var(--soft)}
+.filmbox{margin-top:clamp(2.5rem,6vw,4rem); border-radius:6px; overflow:hidden; background:#000; aspect-ratio:16/9}
+.filmbox video{display:block; width:100%; height:100%}
+.law{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(2rem,5vw,5rem); align-items:start}
+.law ul{list-style:none; margin:0; padding:0}
+.law li{padding:1rem 0; border-top:1px solid var(--line-l); line-height:1.5}
+.law li:last-child{border-bottom:1px solid var(--line-l)}
+.law li b{font-weight:600}
+.contact{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:clamp(2rem,5vw,5rem); align-items:start}
+.formslot{border:1px dashed var(--line-d); border-radius:6px; min-height:22rem; padding:1.5rem}
+.formslot:not(:empty){border:none; padding:0}
+.reach{display:flex; flex-direction:column; gap:.9rem; margin-top:2rem; font-size:1.1rem}
+.reach a{text-decoration:none; border-bottom:1px solid var(--line-d); padding-bottom:.9rem}
+.reach a:hover{color:var(--pool)}
+footer{border-top:1px solid var(--line-d); padding:2.5rem 0 calc(2.5rem + env(safe-area-inset-bottom,0px)); font-size:.88rem; color:var(--grey); scroll-snap-align:end}
+footer .wrap{display:flex; flex-wrap:wrap; gap:1rem 2rem; justify-content:space-between}
+footer p{margin:0; max-width:44rem; line-height:1.6}
+
+@media (max-width:860px){
+  .nav nav a:not(.btn){display:none}
+  .grid3{grid-template-columns:1fr}
+  .steps li{grid-template-columns:3.2rem minmax(0,1fr); }
+  .steps li p{grid-column:2}
+  .law,.contact{grid-template-columns:1fr}
+  .rail{display:none}
+  .facts li{font-size:.8rem}
+}
+@media (prefers-reduced-motion: reduce){ .cue i{animation:none} }
+</style>
+</head>
+<body class="loading">
+<div id="loader" role="status" aria-live="polite"><div class="loader-inner"><span class="mark">bmon.ai <span>real estate</span></span><h2>Preparing your<br>private tour.</h2><p id="loaderMessage">Downloading the full experience</p><div class="loader-track"><span id="loaderBar"></span></div><p class="loader-count" id="loaderCount">0%</p><button id="loaderRetry" type="button" hidden>Retry download</button></div></div>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="mark" href="#top">bmon.ai<span>real estate</span></a>
+    <nav aria-label="Main">
+      <a href="#demo">Demo</a>
+      <a href="#included">What you get</a>
+      <a href="#how">How it works</a>
+      <a class="btn" href="#book">Book a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" aria-labelledby="h1">
+  <img class="poster" src="assets/hero-poster.jpg" alt="">
+  <video id="heroVid" muted playsinline loop preload="none" poster="assets/hero-poster.jpg"></video>
+  <div class="wrap">
+    <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
+    <h1 id="h1">Scroll through the house before the showing.</h1>
+    <p class="sub">We turn your listing photos into a flythrough buyers control with their thumb: a scroll-driven web tour, a full film and social cuts, with disclosure built in.</p>
+    <div class="ctas">
+      <a class="btn" href="#book">Book a demo</a>
+      <a class="btn ghost" href="#demo">Scroll the demo</a>
+    </div>
+  </div>
+</section>
+
+<section id="demo" aria-label="Demo listing tour">
+  <div id="tour">
+    <div class="stage" id="stage">
+      <div class="layer" id="A"><img alt="" id="Aimg"></div>
+      <div class="layer" id="B"><img alt="" id="Bimg"></div>
+      <div id="flyWrap"><video id="tourVideo" muted playsinline preload="none" aria-hidden="true"></video></div>
+      <div class="shade"></div>
+      <div class="veil" id="veil"></div>
+      <span class="tag">Demo listing, AI-generated concept renders</span>
+      <div class="thero" id="thero">
+        <div>
+          <small>Demo listing</small>
+          <h2>The Hillside<br>Residence</h2>
+          <p>Four bedrooms, a resort backyard and about 3,000 square feet of indoor-outdoor living.</p>
+          <div class="cue">Keep scrolling to fly through<i></i></div>
+        </div>
+      </div>
+      <div class="card" id="card" aria-live="polite">
+        <p class="count" id="count"></p>
+        <h3 id="name"></h3>
+        <p class="line" id="line"></p>
+        <ul class="facts" id="facts"></ul>
+      </div>
+      <nav class="rail" id="rail" aria-label="Rooms"></nav>
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+</section>
+
+<section class="block light" id="included">
+  <div class="wrap">
+    <p class="kicker">What every listing gets</p>
+    <h2 class="big">One shoot of photos. Three ways to sell the house.</h2>
+    <div class="grid3">
+      <div class="item"><span class="no">01</span><h3>Scroll tour page</h3><p class="muted">The experience you just scrolled: a private link for the listing that flies room to room and stops on each space with its details. Drop it in the MLS remarks, your emails and your bio link.</p></div>
+      <div class="item"><span class="no">02</span><h3>Full flythrough film</h3><p class="muted">A continuous film of the same flight, ready for YouTube, your website and the listing presentation you show sellers.</p></div>
+      <div class="item"><span class="no">03</span><h3>Vertical social cuts</h3><p class="muted">Reels and Shorts trimmed from the film, so the listing goes out on Instagram, TikTok and Facebook the day it hits the market.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <p class="kicker">How it works</p>
+    <h2 class="big">You send photos. We build the flight.</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Send the listing photos</h3><p>The same set you'd upload to the MLS. Add a note on the room order and anything that must not change.</p></li>
+      <li><span class="n">2</span><h3>We plan and generate the flight path</h3><p>Each move follows how the home is actually laid out: front door to living room, kitchen to stairs. Where rooms don't physically connect, the transition is marked as a creative cut.</p></li>
+      <li><span class="n">3</span><h3>You review before anything goes live</h3><p>Every frame is checked against your photos for invented features. You approve the tour, the film and the cuts, then publish.</p></li>
+    </ol>
+    <div class="filmbox">
+      <video id="filmVid" controls playsinline preload="none" poster="assets/film-poster.jpg"></video>
+    </div>
+    <p class="muted" style="margin-top:1rem; font-size:.92rem">The full film from the demo listing above. Concept renders, AI-generated.</p>
+  </div>
+</section>
+
+<section class="block light" id="compliance">
+  <div class="wrap law">
+    <div>
+      <p class="kicker">Disclosure built in</p>
+      <h2 class="big">AB 723-ready, so the tour helps the listing instead of risking it.</h2>
+    </div>
+    <div>
+      <p class="lede" style="margin-top:0">Since January 1, 2026, California requires listing images that are digitally altered beyond simple fixes to be disclosed, with the unaltered originals available. AI tours change images by definition, so we treat disclosure as part of the product.</p>
+      <ul style="margin-top:1.6rem">
+        <li><b>Visible labeling</b> on the tour page, the film and every social cut.</li>
+        <li><b>A link or QR code to your original photos</b>, included with each tour.</li>
+        <li><b>A check for invented features</b>, such as extra windows, rooms or views, before you see a draft.</li>
+      </ul>
+      <p class="muted" style="font-size:.88rem; margin-top:1.2rem">This is how we build our product, not legal advice. Confirm your obligations with your broker.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="book">
+  <div class="wrap contact">
+    <div>
+      <p class="kicker">Book a demo</p>
+      <h2 class="big">See it on one of your listings.</h2>
+      <p class="lede muted">Send us an active or upcoming listing and we'll show you what its flythrough could look like.</p>
+      <div class="reach">
+        <a href="mailto:support@bmon.ai?subject=Flythrough%20tour%20demo">support@bmon.ai</a>
+        <a href="tel:+12138716004">+1 213-871-6004</a>
+      </div>
+    </div>
+    <!-- Paste the GoHighLevel form or calendar embed code inside this div -->
+    <div class="formslot" id="ghl-form"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--white); font-weight:600">bmon.ai</b> &nbsp;AI + Marketing. Built for Growth.</span>
+    <p>The Hillside Residence is a demonstration property. All of its images and video are AI-generated concept renders and do not depict a real home.</p>
+  </div>
+</footer>
+
+<script>
+const ROOMS = [{"name": "Arrival", "line": "Olive trees, cypress and a white oak pivot door set the tone from the street.", "facts": ["4 bedrooms", "3.5 baths", "About 3,000 sq ft", "Two-car garage"], "img": "assets/room0.jpg"}, {"name": "Great room", "line": "Glass pocket doors slide away and the living room becomes part of the yard.", "facts": ["10 ft ceilings", "Wide-plank white oak floors", "Linear gas fireplace", "Full-width pocket doors"], "img": "assets/room1.jpg"}, {"name": "Kitchen", "line": "A quartzite waterfall island built for both cooking and company.", "facts": ["Calacatta quartzite island", "48 in. professional range", "Paneled built-in refrigerator", "Seating for three"], "img": "assets/room2.jpg"}, {"name": "Primary suite", "line": "A beamed, vaulted ceiling and a private balcony over the pool.", "facts": ["Vaulted oak-beam ceiling", "Private balcony", "Pool and hillside views", "Sitting area"], "img": "assets/room3.jpg"}, {"name": "Primary bath", "line": "Soak in the stone tub with the garden just beyond the glass.", "facts": ["Freestanding stone tub", "Travertine walk-in shower", "Double floating vanity", "Garden window"], "img": "assets/room4.jpg"}, {"name": "Bedroom two", "line": "A bright guest room with a built-in desk nook and garden views.", "facts": ["Queen-size layout", "Built-in oak desk", "Front garden outlook", "Natural light all day"], "img": "assets/room5.jpg"}, {"name": "Backyard", "line": "Infinity-edge pool, spa spillover, fire lounge and an outdoor kitchen.", "facts": ["Infinity-edge pool", "Raised spa with waterfall", "Sunken fire lounge", "Covered outdoor kitchen"], "img": "assets/room6.jpg"}, {"name": "After dark", "line": "The same yard at blue hour, with the city lights coming on below.", "facts": ["Lit pool and spa", "Landscape uplighting", "City-light views", "Indoor and outdoor living"], "img": "assets/room7.jpg"}];
+const TOUR_SOURCE = 'source/WhatsApp Video 2026-10-08 at 21.58.34.mp4';
+const TOUR_DURATION = 48.333333;
+const CLIP_DURATION = TOUR_DURATION / ROOMS.length;
+const STOPS = [{hero:true, img: ROOMS[7].img}].concat(ROOMS);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const tour = $('tour'), A = $('A'), B = $('B'), Aimg = $('Aimg'), Bimg = $('Bimg');
+const card = $('card'), thero = $('thero'), veil = $('veil'), rail = $('rail');
+let VH, HOLD, TRANS, SEG, aIdx = -1, bIdx = -1, cardIdx = -1;
+
+// nav goes solid once past the hero
+const nav = $('nav');
+addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > innerHeight * 0.6), {passive: true});
+
+const heroVid = $('heroVid'), tourVideo = $('tourVideo'), filmVid = $('filmVid');
+const assetPaths = ['assets/hero-poster.jpg', 'assets/film-poster.jpg', ...ROOMS.map(r => r.img), 'assets/hero-loop.mp4', 'assets/film.mp4', TOUR_SOURCE];
+const loadedAssets = new Map(), received = new Map(), totals = new Map();
+let tourReady = false;
+const loader = $('loader'), loaderBar = $('loaderBar'), loaderCount = $('loaderCount');
+function updateLoading() {
+  const total = [...totals.values()].reduce((a,b) => a+b, 0);
+  const done = [...received.values()].reduce((a,b) => a+b, 0);
+  const pct = Math.min(99, Math.floor((total ? done/total : loadedAssets.size/assetPaths.length)*100));
+  loaderBar.style.width = pct + '%';
+  loaderCount.textContent = `${pct}% · ${loadedAssets.size} of ${assetPaths.length} assets`;
+}
+async function fetchAsset(path) {
+  if (loadedAssets.has(path)) return loadedAssets.get(path);
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+  const size = Number(response.headers.get('content-length')) || 0;
+  totals.set(path, size);
+  let blob;
+  if (response.body && size) {
+    const reader = response.body.getReader(), chunks = [];
+    let count = 0;
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      chunks.push(value); count += value.byteLength;
+      received.set(path, count); updateLoading();
+    }
+    blob = new Blob(chunks, {type: response.headers.get('content-type') || 'application/octet-stream'});
+  } else {
+    blob = await response.blob(); received.set(path, blob.size); totals.set(path, blob.size);
+  }
+  const url = URL.createObjectURL(blob);
+  if (!path.endsWith('.mp4')) {
+    const image = new Image(); image.src = url; await image.decode();
+  }
+  loadedAssets.set(path, url); updateLoading();
+  return url;
+}
+async function prepareTour() {
+  $('loaderRetry').hidden = true;
+  $('loaderMessage').textContent = 'Downloading the full experience';
+  try {
+    await Promise.all(assetPaths.map(fetchAsset));
+    document.querySelector('.poster').src = loadedAssets.get('assets/hero-poster.jpg');
+    filmVid.poster = loadedAssets.get('assets/film-poster.jpg');
+    filmVid.src = loadedAssets.get('assets/film.mp4');
+    heroVid.poster = loadedAssets.get('assets/hero-poster.jpg');
+    heroVid.src = loadedAssets.get('assets/hero-loop.mp4');
+    tourVideo.src = loadedAssets.get(TOUR_SOURCE);
+    tourVideo.load();
+    await new Promise((resolve, reject) => {
+      if (tourVideo.readyState >= 2) return resolve();
+      tourVideo.addEventListener('loadeddata', resolve, {once:true});
+      tourVideo.addEventListener('error', () => reject(new Error('Tour video could not decode')), {once:true});
+    });
+    await document.fonts.ready;
+    tourReady = true;
+    if (!reduce) heroVid.play().catch(() => {});
+    loaderBar.style.width = '100%';
+    loaderCount.textContent = `100% · ${assetPaths.length} of ${assetPaths.length} assets`;
+    $('loaderMessage').textContent = 'Your tour is ready';
+    document.body.classList.remove('loading');
+    loader.classList.add('done');
+    setTimeout(() => loader.remove(), 600);
+    render();
+  } catch (error) {
+    $('loaderMessage').textContent = `Download failed: ${error.message}`;
+    $('loaderRetry').hidden = false;
+  }
+}
+$('loaderRetry').addEventListener('click', prepareTour);
+prepareTour();
+
+const railBtns = ROOMS.map((r, i) => {
+  const b = document.createElement('button');
+  b.innerHTML = `<span class="nm">${r.name}</span><span class="dot"></span>`;
+  b.setAttribute('aria-label', `Go to ${r.name}`);
+  b.onclick = () => goStop(i + 1);
+  rail.appendChild(b);
+  return b;
+});
+
+function tourTop() { return tour.getBoundingClientRect().top + scrollY; }
+
+function layout() {
+  VH = innerHeight; HOLD = VH * 0.9; TRANS = VH * 3.6; SEG = HOLD + TRANS;
+  tour.style.height = ((STOPS.length - 1) * SEG + HOLD + VH * 1.1) + 'px';
+  tour.querySelectorAll('.snap').forEach(n => n.remove());
+  STOPS.forEach((s, k) => {
+    const m = document.createElement('div');
+    m.className = 'snap'; m.style.top = (k * SEG + HOLD * 0.5) + 'px';
+    tour.appendChild(m);
+  });
+  render();
+}
+function goStop(k) { scrollTo({top: tourTop() + k * SEG + HOLD * 0.5, behavior: reduce ? 'auto' : 'smooth'}); }
+
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+function setImg(el, idx, w) {
+  if (w === 'A' ? aIdx === idx : bIdx === idx) return;
+  el.src = loadedAssets.get(STOPS[idx].img) || STOPS[idx].img; if (w === 'A') aIdx = idx; else bIdx = idx;
+}
+function fillCard(k) {
+  if (cardIdx === k) return; cardIdx = k; if (k === 0) return;
+  const r = ROOMS[k - 1];
+  $('count').textContent = `${k} of ${ROOMS.length}`;
+  $('name').textContent = r.name; $('line').textContent = r.line;
+  $('facts').innerHTML = r.facts.map(f => `<li>${f}</li>`).join('');
+}
+
+// Follow the original 1080p, 24 fps timeline one frame at a time.
+let targetTime = 0, activeSegment = -1;
+function seekTour(k, raw) {
+  if (!tourReady || reduce) return;
+  activeSegment = k;
+  targetTime = Math.min(TOUR_DURATION - 0.05, (k + raw) * CLIP_DURATION);
+  const frame = Math.round(targetTime * 24) / 24;
+  if (!tourVideo.seeking && Math.abs(tourVideo.currentTime - frame) > 1 / 48) tourVideo.currentTime = frame;
+  tourVideo.style.opacity = 1;
+  A.style.visibility = B.style.visibility = 'hidden';
+}
+tourVideo.addEventListener('seeked', () => {
+  if (activeSegment < 0) return;
+  const frame = Math.round(targetTime * 24) / 24;
+  if (Math.abs(tourVideo.currentTime - frame) > 1 / 48) tourVideo.currentTime = frame;
+});
+
+function render() {
+  const top = tourTop();
+  const p = clamp(scrollY - top, 0, (STOPS.length - 1) * SEG + HOLD);
+  const k = Math.min(STOPS.length - 1, Math.floor(p / SEG));
+  const local = p - k * SEG;
+  const inTrans = local > HOLD && k < STOPS.length - 1;
+  const raw = inTrans ? (local - HOLD) / TRANS : 0;
+  const t = ease(raw);
+
+  setImg(Aimg, k, 'A');
+  const drift = inTrans ? 1 : clamp(local / HOLD);
+  if (reduce) {
+    A.style.transform = 'none';
+    if (inTrans) { setImg(Bimg, k + 1, 'B'); B.style.opacity = t; B.style.transform = 'none'; } else B.style.opacity = 0;
+  } else {
+    // fallback zoom while a clip is still loading
+    A.style.transformOrigin = '50% 45%';
+    A.style.transform = `scale(${1.04 + 0.03 * drift + 1.2 * Math.pow(t, 1.6)})`;
+    A.style.filter = `blur(${6 * Math.pow(t, 1.6)}px)`;
+    if (inTrans) {
+      setImg(Bimg, k + 1, 'B');
+      const arrive = clamp((raw - 0.42) / 0.58), ea = 1 - Math.pow(1 - arrive, 3);
+      B.style.opacity = clamp((raw - 0.42) / 0.16);
+      B.style.transform = `scale(${1.6 - 0.56 * ea})`;
+      B.style.filter = `blur(${6 * (1 - ea)}px)`;
+    } else B.style.opacity = 0;
+  }
+  if (inTrans && tourReady && !reduce) seekTour(k, raw);
+  else {
+    activeSegment = -1;
+    tourVideo.style.opacity = 0;
+    A.style.visibility = B.style.visibility = 'visible';
+  }
+
+  const heroOp = k === 0 ? 1 - clamp(raw / 0.3) : 0;
+  thero.style.opacity = heroOp;
+  thero.style.transform = `translateY(${-40 * (1 - heroOp)}px)`;
+  veil.style.opacity = k === 0 ? 1 - t : 0;
+  rail.style.opacity = k === 0 && !inTrans ? 0 : 1;
+
+  let shown, op;
+  if (!inTrans) { shown = k; op = 1; }
+  else if (raw < 0.5) { shown = k; op = 1 - clamp(raw / 0.1); }
+  else { shown = k + 1; op = clamp((raw - 0.9) / 0.1); }
+  if (shown === 0) op = 0;
+  fillCard(shown);
+  card.style.opacity = op;
+  card.style.transform = `translateY(${(1 - op) * 24}px)`;
+
+  const active = inTrans && raw >= 0.85 ? k + 1 : k;
+  railBtns.forEach((b, i) => b.classList.toggle('on', i + 1 === active));
+  $('progress').style.width = (p / ((STOPS.length - 1) * SEG + HOLD) * 100) + '%';
+}
+
+let ticking = false;
+addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { render(); ticking = false; }); } }, {passive: true});
+addEventListener('resize', layout);
+Aimg.onload = Bimg.onload = () => render();
+layout();
+</script>
+</body>
+</html>
