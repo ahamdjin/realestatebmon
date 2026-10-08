@@ -2,7 +2,7 @@
 
 A scroll triggered, 1080p real estate tour. The page downloads its images and media before opening. A scroll gesture plays a complete transition at normal speed, then holds on the next room. Reverse clips play when scrolling back.
 
-The booking form requests a preferred date and Pacific time by email; it does not show live availability or confirm a reservation.
+The booking section embeds the Bmon.AI HighLevel calendar for live appointment selection.
 
 The LeadConnector voice AI widget appears below the demo request after the tour media finishes loading.
 

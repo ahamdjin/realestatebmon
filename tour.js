@@ -243,16 +243,6 @@ const heroObserver = new IntersectionObserver(([entry]) => {
   else heroVid.pause();
 }, {threshold:.05});
 heroObserver.observe(document.querySelector('.hero'));
-const bookingForm = $('bookingForm');
-bookingForm.elements.date.min = new Date().toLocaleDateString('en-CA', {timeZone:'America/Los_Angeles'});
-bookingForm.addEventListener('submit', event => {
-  event.preventDefault();
-  const data = new FormData(bookingForm);
-  const subject = encodeURIComponent('Real estate flythrough demo request');
-  const body = encodeURIComponent(`Hello BMON,\n\nI'd like to request a demo call.\n\nName: ${data.get('name')}\nEmail: ${data.get('email')}\nPreferred date: ${data.get('date')}\nPreferred time: ${data.get('time')} Pacific\n\nPlease confirm availability.\n`);
-  location.href = `mailto:support@bmon.ai?subject=${subject}&body=${body}`;
-});
-
 async function prepareTour() {
   $('loaderRetry').hidden = true;
   $('loaderMessage').textContent = 'Downloading the full experience';
