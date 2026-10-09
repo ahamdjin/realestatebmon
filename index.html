@@ -102,7 +102,7 @@ img,video{max-width:100%}
 }
 
 /* Immersive click-to-explore experience */
-#stage{cursor:pointer}
+#stage{cursor:default}
 #stage .hero{pointer-events:none}
 #stage .hero .ctas,#stage .hero .ctas>*{pointer-events:auto}
 #stage #flyWrap{position:absolute;inset:0;z-index:35;pointer-events:none}
@@ -326,10 +326,10 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
   <div class="wrap">
     <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
     <h1 id="h1">Step inside.</h1>
-    <p class="sub">Explore the residence, one room at a time. Tap anywhere on the image to begin.</p>
+    <p class="sub">Explore the residence, one room at a time. Scroll to begin the room-by-room tour.</p>
     <div class="ctas">
       <a class="btn" href="#book">Book a demo</a>
-      <button class="btn ghost" id="startTour" type="button">Explore rooms →</button>
+      <button class="btn ghost" id="startTour" type="button">Start the tour ↓</button>
     </div>
   </div>
 </div>
@@ -345,7 +345,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
         <p class="line" id="line"></p>
         <ul class="facts" id="facts"></ul>
       </div>
-      <div class="room-picker" id="roomPicker"><p class="room-picker-title">Where would you like to go?</p><nav class="rail" id="rail" aria-label="Choose a room"></nav><p class="room-picker-hint">Select a room or tap the image to continue</p></div>
+      <div class="room-picker" id="roomPicker"><p class="room-picker-title">Where would you like to go?</p><nav class="rail" id="rail" aria-label="Choose a room"></nav><p class="room-picker-hint">Scroll to move between rooms, or select a room</p></div>
       <div class="progress" id="progress"></div>
     </div>
   </div>
