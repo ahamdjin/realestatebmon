@@ -147,13 +147,57 @@ function addRoomButton(label,image,index){
  button.append(img,text);button.setAttribute('aria-label','View '+label);
  button.addEventListener('click',()=>goTo(index));rail.appendChild(button);roomButtons.push(button);
 }
-// Clicking the photographic stage advances through rooms. Controls keep their own actions.
-stage.addEventListener('click', event=>{
-  if(busy || event.target.closest('button,a,.room-picker,.card')) return;
-  const next=currentStop>=ROOMS.length ? 0 : currentStop+1;
-  navigateTo(next);
+// Scroll gestures control the frame-driven tour while it is centered.
+// At first and last room, scrolling outward resumes normal page scrolling.
+let lastWheelGesture=0, touchStartY=null;
+function inTour(){
+  const r=tour.getBoundingClientRect();
+  return r.top<innerHeight*.25 && r.bottom>innerHeight*.75;
+}
+function scrollStep(direction){
+  if(!inTour())return false;
+  if(busy)return true;
+  const destination=currentStop+direction;
+  if(destination<0 || destination>ROOMS.length)return false;
+  navigateTo(destination);
+  return true;
+}
+window.addEventListener('wheel',event=>{
+  if(!inTour())return;
+  const direction=Math.sign(event.deltaY);
+  if(!direction)return;
+  const canCapture=busy || (direction>0&&currentStop<ROOMS.length)||(direction<0&&currentStop>0);
+  if(!canCapture)return;
+  event.preventDefault();
+  const now=performance.now();
+  if(!busy && now-lastWheelGesture>450)scrollStep(direction);
+  lastWheelGesture=now;
+},{passive:false});
+tour.addEventListener('touchstart',event=>{
+  if(event.target.closest('button,a,.room-picker'))return;
+  touchStartY=event.touches[0]?.clientY??null;
+},{passive:true});
+tour.addEventListener('touchmove',event=>{
+  if(touchStartY===null||!inTour())return;
+  const direction=Math.sign(touchStartY-(event.touches[0]?.clientY??touchStartY));
+  if(busy||(direction>0&&currentStop<ROOMS.length)||(direction<0&&currentStop>0))
+    event.preventDefault();
+},{passive:false});
+tour.addEventListener('touchend',event=>{
+  if(touchStartY===null)return;
+  const delta=touchStartY-(event.changedTouches[0]?.clientY??touchStartY);
+  touchStartY=null;
+  if(Math.abs(delta)>40)scrollStep(Math.sign(delta));
+},{passive:true});
+window.addEventListener('keydown',event=>{
+  if(!inTour() || event.target.closest('button,a,input,textarea,select'))return;
+  const direction=['ArrowDown','PageDown',' '].includes(event.key)?1:
+    ['ArrowUp','PageUp'].includes(event.key)?-1:0;
+  if(direction && (busy || (direction>0&&currentStop<ROOMS.length)||(direction<0&&currentStop>0))){
+    event.preventDefault();scrollStep(direction);
+  }
 });
-stage.setAttribute('aria-label','Interactive property tour: click the image to advance');
+stage.setAttribute('aria-label','Scroll to explore the rooms frame by frame');
 addRoomButton('Overview','assets/hero-poster.jpg',0);
 ROOMS.forEach((room,i)=>addRoomButton(room.name,room.img,i+1));
 $('startTour').addEventListener('click',()=>goTo(1));
