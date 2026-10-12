@@ -304,6 +304,29 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 .listing-specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem 1rem;padding:2.2rem 0;border-bottom:1px solid #dcd7d1}.listing-specs div{display:flex;flex-direction:column;gap:.5rem}.listing-specs span{color:#77716a;font-size:.82rem}.listing-specs strong{font-size:1rem;font-weight:600}
 .showing-section{background:#ece9e4;color:#201f1d;padding:clamp(5rem,8vw,8rem) 0}.showing-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem)}.showing-section h2{font-size:clamp(2.6rem,5vw,4.8rem);line-height:1.06;letter-spacing:-.04em;margin:0 0 1.2rem}.showing-section p{line-height:1.6;color:#645f58}.showing-card{border:1px solid #d9d3cb;background:#fff;border-radius:20px;padding:clamp(1.5rem,3vw,2.5rem)}.showing-card-label{font-size:.8rem!important}.showing-card h3{font-size:1.6rem;margin:.4rem 0 1.5rem}.showing-card form{display:grid;gap:1rem}.showing-card label{display:grid;gap:.35rem;font-size:.82rem;font-weight:600}.showing-card input,.showing-card select,.showing-card textarea{width:100%;padding:.8rem;border:1px solid #c9c4bc;border-radius:8px;background:#fff;color:#211f1d;font:inherit}.showing-card .showing-help{font-size:.79rem;margin:0}
 @media(max-width:800px){.listing-heading,.showing-grid{display:grid;grid-template-columns:1fr}.listing-price{flex:auto}.listing-specs{grid-template-columns:1fr 1fr}.fictional-pill{margin:.45rem 0}}
+
+html{scroll-behavior:smooth;scroll-padding-top:78px}
+#property,#editorial,#included,#showing,#book,#ask-ai{scroll-margin-top:78px}
+.viewing-hub{background:#f3f0ec;color:#211f1d;padding:clamp(4.5rem,8vw,8rem) 0}
+.viewing-heading{max-width:750px;margin-bottom:2.5rem}
+.viewing-heading h2{font-size:clamp(2.7rem,5vw,4.8rem);line-height:1.05;letter-spacing:-.045em;margin:.4rem 0 .9rem}
+.viewing-heading>p{line-height:1.65;color:#69645e}
+.viewing-heading .demo-disclaimer{font-size:.83rem;color:#817b75}
+.viewing-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.4rem;align-items:stretch}
+.viewing-panel{min-width:0;background:#fff;border:1px solid #e2ddd7;border-radius:19px;padding:clamp(1rem,2.5vw,2rem);overflow:hidden}
+.viewing-panel h3{font-size:clamp(1.5rem,2.4vw,2.15rem);letter-spacing:-.04em;margin:.5rem 0}
+.viewing-panel>p:not(.panel-kicker){font-size:.95rem;color:#6e6963;line-height:1.6}
+.viewing-panel .panel-kicker{font-size:.75rem;color:#8c837a;letter-spacing:.08em;text-transform:uppercase}
+.viewing-panel .calendar-embed{margin:1.5rem 0 0;min-height:790px}
+.viewing-panel .calendar-embed iframe{width:100%;min-height:790px}
+.ai-panel{display:flex;flex-direction:column}
+.ai-agent-stage{flex:1;min-height:525px;background:linear-gradient(145deg,#222827,#121716);border-radius:15px;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2rem 1rem;margin-top:1.5rem;position:relative}
+.agent-orb{height:112px;width:112px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#c0f5e3,#4cbcb0 33%,#1a544f 67%,#101918);box-shadow:0 0 75px #47b6a753;margin-bottom:1.8rem}
+.agent-ready{color:#fff!important;font-size:1.15rem!important;font-weight:600;margin:.4rem 0}
+.agent-instruction{color:#aebdb9!important;font-size:.85rem!important}
+#ai-widget-slot{width:100%;min-height:85px}
+.ai-panel .booking-contact{margin-top:1.2rem}
+@media(max-width:850px){.viewing-columns{grid-template-columns:1fr}.viewing-panel .calendar-embed,.viewing-panel .calendar-embed iframe{min-height:820px}.ai-agent-stage{min-height:360px}.nav nav{gap:.65rem}.nav nav a:not(.btn){display:none}}
 </style>
 </head>
 <body class="loading">
@@ -313,9 +336,10 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
   <div class="wrap">
     <a class="mark" href="#top">bmon.ai<span>real estate</span></a>
     <nav aria-label="Main">
-      <a href="#demo">Demo</a>
-      <a href="#included">Rooms</a>
+      <a href="#demo">Tour</a>
+      <a href="#property">Overview</a>
       <a href="#editorial">Details</a>
+      <a href="#included">Gallery</a>
       <a class="btn" href="#showing">Request a viewing</a>
     </nav>
   </div>
@@ -334,7 +358,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
     <h1 id="h1">Step inside.</h1><p class="hero-listing-line">$3,495,000 <span>· 4 beds · 3.5 baths · 3,240 sq ft</span></p>
     <p class="sub">Explore the residence, one room at a time. Scroll to begin the room-by-room tour.</p>
     <div class="ctas">
-      <a class="btn" href="#book">Book a demo</a>
+      <a class="btn" href="#showing">Book a demo</a>
       <button class="btn ghost" id="startTour" type="button">Start the tour ↓</button>
     </div>
   </div>
@@ -408,43 +432,16 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
   </div><img src="assets/room7.jpg" loading="lazy" alt="AI-generated residence exterior and outdoor living at dusk">
  </div>
 </section>
-<section class="process-brief" aria-labelledby="process-heading"><div class="wrap"><h2 id="process-heading">Your photos. A more memorable showing.</h2><p>Send listing photos and the room sequence. We plan the flight path, produce the experience, and give you a chance to review it before publishing.</p><a class="btn dark" href="#book">Book a personal demo</a></div></section>
+<section class="process-brief" aria-labelledby="process-heading"><div class="wrap"><h2 id="process-heading">Your photos. A more memorable showing.</h2><p>Send listing photos and the room sequence. We plan the flight path, produce the experience, and give you a chance to review it before publishing.</p><a class="btn dark" href="#showing">Book a personal demo</a></div></section>
 
-<section class="showing-section" id="showing" aria-labelledby="showing-title"><div class="wrap showing-grid"><div><p class="kicker">Private viewing</p><h2 id="showing-title">Experience the property.</h2><p>For a real listing, buyers can request a private showing, virtual walk-through or contact the listing representative here.</p><p class="property-notice">This residence is fictional. This request demonstrates the buyer journey and does not schedule a real property visit.</p></div><div class="showing-card"><p class="showing-card-label">DEMO-HR-001 · Fictional residence</p><h3>Request a viewing</h3><form id="showingForm"><label>Full name<input name="name" required autocomplete="name" placeholder="Your name"></label><label>Email<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label><label>Phone (optional)<input type="tel" name="phone" autocomplete="tel" placeholder="+1 (555) 000-0000"></label><label>Preferred viewing date<input type="date" name="date" required></label><label>Viewing format<select name="format"><option>In-person viewing</option><option>Virtual viewing</option><option>Ask about the property</option></select></label><label>Message (optional)<textarea name="message" rows="3" placeholder="Anything else we should know?"></textarea></label><button type="submit" class="btn dark">Prepare demo inquiry →</button><p class="showing-help">Opens an email draft to BMON. No booking is confirmed.</p></form></div></div></section>
-<script>
-document.getElementById('showingForm').addEventListener('submit',function(event){
- event.preventDefault();
- const f=new FormData(this);
- const lines=['Fictional listing demonstration — not a real property showing','Listing: DEMO-HR-001','Name: '+f.get('name'),'Email: '+f.get('email'),'Phone: '+(f.get('phone')||'Not provided'),'Preferred date: '+f.get('date'),'Viewing format: '+f.get('format'),'Message: '+(f.get('message')||'None')];
- location.href='mailto:support@bmon.ai?subject='+encodeURIComponent('Demo listing viewing inquiry — DEMO-HR-001')+'&body='+encodeURIComponent(lines.join('\n'));
-});
-</script>
-<section class="block light booking" id="book" aria-labelledby="booking-title">
-  <div class="wrap">
-    <div class="booking-intro">
-      <div>
-        <p class="kicker">For agents and property marketers</p>
-        <h2 class="big" id="booking-title">Book a personal tour demo.</h2>
-      </div>
-      <p class="lede muted">Choose a time that works for you. We’ll show you how a flythrough could bring your listing to life.</p>
-    </div>
-    <div class="calendar-embed">
-      <iframe src="https://link.bmon.ai/widget/booking/pJOHnRC4COrbPoHl0yA6" allow="payment" scrolling="no" id="pJOHnRC4COrbPoHl0yA6_1791488017867" title="Book a Bmon.AI real estate demo"></iframe>
-    </div>
-    <div class="booking-contact">
-      <span>Prefer to reach out directly?</span>
-      <a href="mailto:support@bmon.ai?subject=Flythrough%20tour%20demo">support@bmon.ai</a>
-      <a href="tel:+12138716004">+1 213-871-6004</a>
-    </div>
+<section class="viewing-hub" id="showing" aria-labelledby="viewing-heading">
+ <div class="wrap">
+  <div class="viewing-heading"><p class="kicker">Viewing &amp; assistance</p><h2 id="viewing-heading">Explore further.</h2><p>Choose a time on the calendar or speak with our AI assistant about the property experience.</p><p class="demo-disclaimer">This is a fictional property demonstration. Calendar appointments are for a BMON tour demo, not an actual property showing.</p></div>
+  <div class="viewing-columns">
+   <article class="viewing-panel" id="book"><p class="panel-kicker">01 · Schedule</p><h3>Request a viewing.</h3><p>Choose an available time to discuss the listing tour experience.</p><div class="calendar-embed"><iframe src="https://link.bmon.ai/widget/booking/pJOHnRC4COrbPoHl0yA6" allow="payment" scrolling="no" id="pJOHnRC4COrbPoHl0yA6_1791488017867" title="Schedule a BMON real estate tour demo"></iframe></div></article>
+   <article class="viewing-panel ai-panel" id="ask-ai"><p class="panel-kicker">02 · Ask AI</p><h3>Questions? Just ask.</h3><p>Talk to our AI agent about the tour, property details or arranging a demo.</p><div class="ai-agent-stage"><div class="agent-orb" aria-hidden="true"><span></span></div><p class="agent-ready">Your AI assistant is ready</p><p class="agent-instruction">Use the AI call button to start a conversation.</p><div id="ai-widget-slot"></div></div><div class="booking-contact"><a href="mailto:support@bmon.ai">support@bmon.ai</a><a href="tel:+12138716004">+1 213-871-6004</a></div></article>
   </div>
-</section>
-<section class="ai-contact" id="ask-ai" aria-labelledby="ask-ai-title">
-  <div class="wrap">
-    <p class="kicker">Questions before you book?</p>
-    <h2 id="ask-ai-title">Talk to our AI assistant.</h2>
-    <p class="lede muted">Use the call button below to ask about the tour. Ready for a personal demo? Choose a time in the calendar above.</p>
-    <div id="ai-widget-slot"></div>
-  </div>
+ </div>
 </section>
 </main>
 
