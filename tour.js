@@ -221,8 +221,7 @@ function loadViewingIntegrations(){
  const calendar=document.querySelector('.calendar-embed iframe[data-src]');
  if(calendar){calendar.src=calendar.dataset.src;calendar.removeAttribute('data-src');}
  for(const [id,slot] of [
-   ['6ac7e9f2b17ff091c6e93d95','ai-widget-slot'],
-   ['6acd440627108de365eb9442','ai-chat-widget-slot']
+   ['6ac7e9f2b17ff091c6e93d95','ai-widget-slot']
  ]){
   const node=document.getElementById(slot);
   if(!node)continue;
