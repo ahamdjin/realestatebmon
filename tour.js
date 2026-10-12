@@ -142,7 +142,7 @@ function goTo(index) {
 }
 function addRoomButton(label,image,index){
  const button=document.createElement('button');button.type='button';
- const img=document.createElement('img');img.src=image;img.alt='';img.loading='eager';
+ const img=document.createElement('img');img.src=image;img.alt='';img.loading='eager';img.decoding='async';
  const text=document.createElement('span');text.className='nm';text.textContent=label;
  button.append(img,text);button.setAttribute('aria-label','View '+label);
  button.addEventListener('click',()=>goTo(index));rail.appendChild(button);roomButtons.push(button);
@@ -205,8 +205,38 @@ window.addEventListener('scroll',()=> $('nav').classList.toggle('solid',scrollY>
 displayRoom(0);
 document.body.classList.remove('loading');
 $('loader').remove();
-const chatWidget=document.createElement('script');
-chatWidget.src='https://widgets.leadconnectorhq.com/loader.js';
-chatWidget.dataset.resourcesUrl='https://widgets.leadconnectorhq.com/chat-widget/loader.js';
-chatWidget.dataset.widgetId='6ac7e9f2b17ff091c6e93d95';
-$('ai-widget-slot').appendChild(chatWidget);
+// Load all property images immediately; defer third-party media and widgets.
+const propertyImages=['assets/hero-poster.jpg',...ROOMS.map(room=>room.img)];
+const imagePreloads=propertyImages.map(src=>{
+ const img=new Image();img.decoding='async';img.src=src;
+ return img.decode().catch(()=>{});
+});
+Promise.allSettled(imagePreloads).then(()=>stage.classList.add('images-prepared'));
+
+const viewingHub=document.getElementById('showing');
+let thirdPartyLoaded=false;
+function loadViewingIntegrations(){
+ if(thirdPartyLoaded)return;
+ thirdPartyLoaded=true;
+ const calendar=document.querySelector('.calendar-embed iframe[data-src]');
+ if(calendar){calendar.src=calendar.dataset.src;calendar.removeAttribute('data-src');}
+ for(const [id,slot] of [
+   ['6ac7e9f2b17ff091c6e93d95','ai-widget-slot'],
+   ['6acd440627108de365eb9442','ai-chat-widget-slot']
+ ]){
+  const node=document.getElementById(slot);
+  if(!node)continue;
+  const script=document.createElement('script');
+  script.src='https://widgets.leadconnectorhq.com/loader.js';
+  script.dataset.resourcesUrl='https://widgets.leadconnectorhq.com/chat-widget/loader.js';
+  script.dataset.widgetId=id;
+  node.appendChild(script);
+ }
+}
+const viewObserver=new IntersectionObserver(entries=>{
+ if(entries.some(entry=>entry.isIntersecting)){
+   loadViewingIntegrations();viewObserver.disconnect();
+ }
+},{rootMargin:'350px 0px'});
+viewObserver.observe(viewingHub);
+if(location.hash==='#showing'||location.hash==='#book'||location.hash==='#ask-ai')loadViewingIntegrations();
