@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>bmon.ai real estate | Scroll-through flythrough tours for listings</title>
-<meta name="description" content="AI flythrough tours for Los Angeles listings: a scroll-driven web tour, a full film and social cuts, built from your listing photos, with AB 723 disclosure built in.">
+<title>The Hillside Residence | Fictional luxury listing demo by BMON</title>
+<meta name="description" content="Explore a fictional Los Angeles luxury listing with interactive tours, property specifications, amenities and sample showing information. BMON AI demo.">
 <meta property="og:title" content="Scroll through the house before the showing">
 <meta property="og:description" content="AI flythrough listing tours by bmon.ai">
 <meta property="og:type" content="website">
@@ -298,6 +298,12 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 .thero h2,.card h3,.loader-inner h2,.ai-contact h2{font-family:var(--ui);font-weight:500;letter-spacing:-.045em}
 .property-intro h2,.rooms-editorial h2,.floorplan-editorial h2,.cost-editorial h2,.process-brief h2{font-weight:500;line-height:1.08}
 .rooms-editorial h3,.floorplan-editorial h3,.cost-row strong,.property-stats strong,.floor-card strong{font-weight:500}
+.hero-listing-line{margin:1.2rem 0;font-size:clamp(1rem,1.8vw,1.3rem);font-weight:600;text-shadow:0 2px 8px #000}.hero-listing-line span{font-size:.82em;font-weight:400;color:#ddd}
+.fictional-pill{display:inline-block;padding:.35rem .7rem;margin-left:.6rem;border-radius:99px;background:#dfd8cc;color:#514b43;font-size:.7rem;vertical-align:middle}
+.listing-heading{display:flex;justify-content:space-between;gap:2.5rem;align-items:start}.listing-heading h2{margin:0 0 1rem}.listing-category{font-size:.85rem;color:#77716a;text-transform:uppercase;letter-spacing:.1em}.listing-description{max-width:41rem;color:#68635c;line-height:1.6;font-size:1.13rem}.listing-price{flex:0 0 265px;display:flex;flex-direction:column;gap:.65rem;align-items:flex-start}.listing-price strong{font-size:clamp(2rem,3vw,2.8rem);letter-spacing:-.05em}.listing-price span{font-size:.82rem;color:#77716a}.listing-price .btn{margin-top:.75rem}
+.listing-specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem 1rem;padding:2.2rem 0;border-bottom:1px solid #dcd7d1}.listing-specs div{display:flex;flex-direction:column;gap:.5rem}.listing-specs span{color:#77716a;font-size:.82rem}.listing-specs strong{font-size:1rem;font-weight:600}
+.showing-section{background:#ece9e4;color:#201f1d;padding:clamp(5rem,8vw,8rem) 0}.showing-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem)}.showing-section h2{font-size:clamp(2.6rem,5vw,4.8rem);line-height:1.06;letter-spacing:-.04em;margin:0 0 1.2rem}.showing-section p{line-height:1.6;color:#645f58}.showing-card{border:1px solid #d9d3cb;background:#fff;border-radius:20px;padding:clamp(1.5rem,3vw,2.5rem)}.showing-card-label{font-size:.8rem!important}.showing-card h3{font-size:1.6rem;margin:.4rem 0 1.5rem}.showing-card form{display:grid;gap:1rem}.showing-card label{display:grid;gap:.35rem;font-size:.82rem;font-weight:600}.showing-card input,.showing-card select,.showing-card textarea{width:100%;padding:.8rem;border:1px solid #c9c4bc;border-radius:8px;background:#fff;color:#211f1d;font:inherit}.showing-card .showing-help{font-size:.79rem;margin:0}
+@media(max-width:800px){.listing-heading,.showing-grid{display:grid;grid-template-columns:1fr}.listing-price{flex:auto}.listing-specs{grid-template-columns:1fr 1fr}.fictional-pill{margin:.45rem 0}}
 </style>
 </head>
 <body class="loading">
@@ -310,7 +316,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
       <a href="#demo">Demo</a>
       <a href="#included">Rooms</a>
       <a href="#editorial">Details</a>
-      <a class="btn" href="#book">Book a demo</a>
+      <a class="btn" href="#showing">Request a viewing</a>
     </nav>
   </div>
 </header>
@@ -324,8 +330,8 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 <div class="hero" aria-labelledby="h1">
   <img class="poster" src="assets/hero-poster.jpg" alt="">
   <div class="wrap">
-    <p class="eyebrow">AI flythrough tours for Los Angeles listings</p>
-    <h1 id="h1">Step inside.</h1>
+    <p class="eyebrow">The Hillside Residence <span style="color:#fff9">· Fictional listing demo</span></p>
+    <h1 id="h1">Step inside.</h1><p class="hero-listing-line">$3,495,000 <span>· 4 beds · 3.5 baths · 3,240 sq ft</span></p>
     <p class="sub">Explore the residence, one room at a time. Scroll to begin the room-by-room tour.</p>
     <div class="ctas">
       <a class="btn" href="#book">Book a demo</a>
@@ -353,10 +359,10 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 
 <section class="property-intro" id="property" aria-labelledby="property-heading">
  <div class="property-wrap">
-  <p class="property-location">The Hillside Residence · AI concept property</p>
-  <h2 id="property-heading">A house designed around the light: open living spaces, white-oak warmth, and a seamless view from the great room to the pool.</h2>
-  <div class="property-stats"><div><strong>≈3,000</strong><span>sq ft · illustrative</span></div><div><strong>4 · 3.5</strong><span>bedrooms · baths</span></div><div><strong>2-car</strong><span>garage</span></div><div><strong>8</strong><span>tour spaces</span></div></div>
-  <p class="property-notice">An AI-generated concept listing demonstrating how cinematic property tours can feel. No actual home is offered for sale.</p>
+  <p class="property-location">1847 Laurel Vista Lane · Los Angeles, CA 90046 <span class="fictional-pill">Fictional sample address</span></p>
+  <div class="listing-heading"><div><p class="listing-category">Single-family residence · Hillside contemporary</p><h2 id="property-heading">The Hillside Residence</h2><p class="listing-description">Open-plan living, white-oak warmth, expansive glazing and a seamless connection to the pool terrace.</p></div><div class="listing-price"><strong>$3,495,000</strong><span>Illustrative asking price · Not for sale</span><a class="btn dark" href="#showing">Request a viewing</a></div></div>
+  <div class="property-stats"><div><strong>3,240</strong><span>interior sq ft</span></div><div><strong>4</strong><span>bedrooms</span></div><div><strong>3.5</strong><span>bathrooms</span></div><div><strong>8,760</strong><span>lot sq ft</span></div></div><div class="listing-specs"><div><span>Property type</span><strong>Single-family home</strong></div><div><span>Architectural style</span><strong>Contemporary</strong></div><div><span>Year built</span><strong>2021 (sample)</strong></div><div><span>Parking</span><strong>2-car attached garage</strong></div><div><span>Levels</span><strong>2</strong></div><div><span>Outdoor features</span><strong>Pool · Spa · Outdoor kitchen</strong></div><div><span>Heating & cooling</span><strong>Central HVAC (sample)</strong></div><div><span>Listing reference</span><strong>DEMO-HR-001</strong></div></div>
+  <p class="property-notice">All addresses, measurements, asking prices, building details and amenities shown here are fictional demonstration information, not verified property records. This is not an active listing or offer for sale.</p>
  </div>
 </section>
 <section class="rooms-editorial" id="included" aria-labelledby="rooms-heading">
@@ -404,11 +410,20 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 </section>
 <section class="process-brief" aria-labelledby="process-heading"><div class="wrap"><h2 id="process-heading">Your photos. A more memorable showing.</h2><p>Send listing photos and the room sequence. We plan the flight path, produce the experience, and give you a chance to review it before publishing.</p><a class="btn dark" href="#book">Book a personal demo</a></div></section>
 
+<section class="showing-section" id="showing" aria-labelledby="showing-title"><div class="wrap showing-grid"><div><p class="kicker">Private viewing</p><h2 id="showing-title">Experience the property.</h2><p>For a real listing, buyers can request a private showing, virtual walk-through or contact the listing representative here.</p><p class="property-notice">This residence is fictional. This request demonstrates the buyer journey and does not schedule a real property visit.</p></div><div class="showing-card"><p class="showing-card-label">DEMO-HR-001 · Fictional residence</p><h3>Request a viewing</h3><form id="showingForm"><label>Full name<input name="name" required autocomplete="name" placeholder="Your name"></label><label>Email<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label><label>Phone (optional)<input type="tel" name="phone" autocomplete="tel" placeholder="+1 (555) 000-0000"></label><label>Preferred viewing date<input type="date" name="date" required></label><label>Viewing format<select name="format"><option>In-person viewing</option><option>Virtual viewing</option><option>Ask about the property</option></select></label><label>Message (optional)<textarea name="message" rows="3" placeholder="Anything else we should know?"></textarea></label><button type="submit" class="btn dark">Prepare demo inquiry →</button><p class="showing-help">Opens an email draft to BMON. No booking is confirmed.</p></form></div></div></section>
+<script>
+document.getElementById('showingForm').addEventListener('submit',function(event){
+ event.preventDefault();
+ const f=new FormData(this);
+ const lines=['Fictional listing demonstration — not a real property showing','Listing: DEMO-HR-001','Name: '+f.get('name'),'Email: '+f.get('email'),'Phone: '+(f.get('phone')||'Not provided'),'Preferred date: '+f.get('date'),'Viewing format: '+f.get('format'),'Message: '+(f.get('message')||'None')];
+ location.href='mailto:support@bmon.ai?subject='+encodeURIComponent('Demo listing viewing inquiry — DEMO-HR-001')+'&body='+encodeURIComponent(lines.join('\n'));
+});
+</script>
 <section class="block light booking" id="book" aria-labelledby="booking-title">
   <div class="wrap">
     <div class="booking-intro">
       <div>
-        <p class="kicker">Your listing, reimagined</p>
+        <p class="kicker">For agents and property marketers</p>
         <h2 class="big" id="booking-title">Book a personal tour demo.</h2>
       </div>
       <p class="lede muted">Choose a time that works for you. We’ll show you how a flythrough could bring your listing to life.</p>
@@ -436,7 +451,7 @@ h1,h2,h3,h4,h5,h6,.editorial h2,.editorial h3,.floor-card strong,.property-stats
 <footer>
   <div class="wrap">
     <span><b style="color:var(--white); font-weight:600">bmon.ai</b> &nbsp;AI + Marketing. Built for Growth.</span>
-    <p>The Hillside Residence is a demonstration property. All of its images and video are AI-generated concept renders and do not depict a real home.</p>
+    <p>The Hillside Residence is fictional. Address, property specifications, price and visuals are illustrative only; no actual home is offered for sale. Images and video are AI-generated.</p>
   </div>
 </footer>
 
